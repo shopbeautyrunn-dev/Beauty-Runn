@@ -1,0 +1,8 @@
+{
+  "name": "Beauty Runn",
+  "description": "Don't Stress, Let Beauty Runn It. Professional beauty products delivered to your door in minutes.",
+  "requestFramePermissions": [
+    "geolocation",
+    "camera"
+  ]
+}
