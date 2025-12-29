@@ -717,7 +717,7 @@ const App: React.FC = () => {
               <div className="animate-fadeIn space-y-12 pb-32">
                 <div className="bg-gray-900 p-8 rounded-[40px] shadow-2xl space-y-6">
                   <div className="flex justify-between items-center">
-                    <h2 className="text-white text-3xl font-black tracking-tighter uppercase">Marketplace</h2>
+                    <h2 className="text-white text-3xl font-black tracking-tighter uppercase">Visit Shops</h2>
                     <i className="fa-solid fa-store text-pink-600 text-3xl opacity-20"></i>
                   </div>
                   <div className="flex bg-white/10 p-2 rounded-[28px] border border-white/5">
