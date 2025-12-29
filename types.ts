@@ -2,7 +2,7 @@
 export type AppRole = 'CUSTOMER' | 'DRIVER' | 'VENDOR' | 'ADMIN' | 'EDITOR';
 export type DriverTier = 'Bronze' | 'Silver' | 'Gold' | 'Platinum';
 
-export type DriverOnboardingStatus = 'NOT_STARTED' | 'BACKGROUND_CHECK' | 'DOCUMENTS' | 'VEHICLE_INFO' | 'TERMS' | 'APPROVED';
+export type DriverOnboardingStatus = 'NOT_STARTED' | 'BACKGROUND_CHECK' | 'DOCUMENTS' | 'VEHICLE_INFO' | 'TERMS' | 'PENDING_APPROVAL' | 'APPROVED' | 'REJECTED';
 
 export interface DriverEarnings {
   total: number;
@@ -10,6 +10,27 @@ export interface DriverEarnings {
   tips: number;
   incentives: number;
   pendingBalance: number;
+}
+
+export interface AdminStats {
+  dailyRevenue: number;
+  weeklyRevenue: number;
+  monthlyRevenue: number;
+  activeDrivers: number;
+  pendingApplications: number;
+  activeOrders: number;
+  avgRating: number;
+  revenueGrowth: number;
+}
+
+export interface SupportTicket {
+  id: string;
+  userId: string;
+  userName: string;
+  subject: string;
+  status: 'OPEN' | 'IN_PROGRESS' | 'CLOSED';
+  priority: 'LOW' | 'MEDIUM' | 'HIGH';
+  timestamp: number;
 }
 
 export interface Incentive {
@@ -20,6 +41,21 @@ export interface Incentive {
   requirement: number;
   progress: number;
   type: 'streak' | 'volume' | 'distance' | 'referral';
+}
+
+export interface DriverApplication {
+  fullName: string;
+  dob: string;
+  ssn: string;
+  address: string;
+  email: string;
+  documents: {
+    license: string | null;
+    ssnCard: string | null;
+    insurance: string | null;
+  };
+  consentBackgroundCheck: boolean;
+  status: DriverOnboardingStatus;
 }
 
 export interface BeautyVendor {
@@ -120,6 +156,7 @@ export interface Order {
   allowSubstitutes: boolean;
   deliveryPhoto?: string;
   deliveryPhotoConfirmed?: boolean;
+  deliveryPhotoUrl?: string;
   deliverySpeed?: 'STANDARD' | 'RUSH' | 'SCHEDULED';
   lastMinuteItems?: CartItem[];
 }
@@ -144,6 +181,6 @@ export interface TeamMember {
   id: string;
   name: string;
   email: string;
-  role: 'ADMIN' | 'EDITOR';
+  role: 'ADMIN' | 'MANAGER' | 'SUPPORT';
   lastActive: number;
 }
