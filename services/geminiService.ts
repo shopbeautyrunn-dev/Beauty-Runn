@@ -1,18 +1,19 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 
-// Initialize the GoogleGenAI client using the API key from environment variables.
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 export const getSmartProductSearch = async (query: string) => {
   try {
+    // Always initialize GoogleGenAI inside the function to ensure the latest API key is used.
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: `User is searching for professional beauty products in the "Beauty Runn" app with this query: "${query}". 
       Based on their intent, suggest specific product categories or salon-grade items they might be looking for. 
       Return the results in a helpful, vibrant, and professional beauty-expert tone.`,
       config: {
-        maxOutputTokens: 150,
+        // When maxOutputTokens is specified, a thinkingBudget must be set to ensure enough tokens remain for the response.
+        maxOutputTokens: 250,
+        thinkingConfig: { thinkingBudget: 100 },
       }
     });
     return response.text;
@@ -24,6 +25,8 @@ export const getSmartProductSearch = async (query: string) => {
 
 export const getBeautyAssistantResponse = async (userMessage: string) => {
   try {
+    // Always initialize GoogleGenAI inside the function to ensure the latest API key is used.
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: userMessage,

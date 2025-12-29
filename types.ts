@@ -16,10 +16,10 @@ export interface Incentive {
   id: string;
   title: string;
   description: string;
-  amount: number;
+  amount: number | string;
   requirement: number;
   progress: number;
-  type: 'streak' | 'volume' | 'distance';
+  type: 'streak' | 'volume' | 'distance' | 'referral';
 }
 
 export interface BeautyVendor {
@@ -30,31 +30,38 @@ export interface BeautyVendor {
   deliveryTime: string;
   category: string;
   description: string;
-  city: 'Houston' | 'Dallas' | 'San Antonio' | 'New Orleans' | 'Austin' | 'Killeen' | 'Port Arthur' | 'Beaumont' | 'Columbus';
+  city: 'Houston' | 'Dallas' | 'San Antonio' | 'Austin' | 'Killeen' | 'Port Arthur' | 'Beaumont' | 'Fort Worth';
   zipCode: string;
   neighborhood?: string;
   topBrands?: string[];
   isMajorHub?: boolean;
+  isSmallChain?: boolean;
+  topSellerIds?: string[];
+}
+
+export interface MarketComparison {
+  sally?: number;
+  ulta?: number;
+  amazon?: number;
+  retailAvg?: number;
 }
 
 export interface Product {
   id: string;
   vendorId: string;
   name: string;
-  price: number;
+  price?: number; 
+  priceRange?: { min: number; max: number };
+  marketComparison?: MarketComparison;
   image: string;
   description: string;
   category: string;
-}
-
-export interface DriverBenefit {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  discount: string;
-  partnerName: string;
-  icon: string;
+  salesVolume?: number;
+  options?: {
+    colors?: string[];
+    lengths?: string[];
+    types?: string[];
+  };
 }
 
 export interface CustomItem {
@@ -64,12 +71,18 @@ export interface CustomItem {
 
 export interface CartItem extends Product {
   quantity: number;
+  selectedOptions?: {
+    color?: string;
+    length?: string;
+    type?: string;
+  };
 }
 
 export enum OrderStatus {
   PENDING = 'PENDING',
   HOLD_PAID = 'HOLD_PAID',
   RUNNER_AT_STORE = 'RUNNER_AT_STORE',
+  PURCHASING = 'PURCHASING',
   PRICE_CONFIRMED = 'PRICE_CONFIRMED',
   OUT_OF_STOCK = 'OUT_OF_STOCK',
   PICKING_UP = 'PICKING_UP',
@@ -83,8 +96,9 @@ export interface Order {
   items: CartItem[];
   customRequest?: CustomItem;
   holdFee: number;
-  total: number;
-  finalPrice?: number;
+  receiptAmount?: number;
+  serviceFee?: number;
+  adjustedTotal?: number;
   status: OrderStatus;
   customerId: string;
   customerName?: string;
@@ -105,7 +119,9 @@ export interface Order {
   specialInstructions?: string;
   allowSubstitutes: boolean;
   deliveryPhoto?: string;
+  deliveryPhotoConfirmed?: boolean;
   deliverySpeed?: 'STANDARD' | 'RUSH' | 'SCHEDULED';
+  lastMinuteItems?: CartItem[];
 }
 
 export interface Message {

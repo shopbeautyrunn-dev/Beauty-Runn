@@ -1,21 +1,28 @@
 
-import { BeautyVendor, Product, DriverBenefit, Incentive } from './types';
+import { BeautyVendor, Product, Incentive } from './types';
 
-// Coordinates for major hubs in requested regions
+// Coordinates for Texas Hubs
 export const CITY_COORDS: Record<string, { lat: number; lng: number }> = {
   'Houston': { lat: 29.7604, lng: -95.3698 },
   'Dallas': { lat: 32.7767, lng: -96.7970 },
   'Austin': { lat: 30.2672, lng: -97.7431 },
   'San Antonio': { lat: 29.4241, lng: -98.4936 },
   'Fort Worth': { lat: 32.7555, lng: -97.3308 },
-  'New Orleans': { lat: 29.9511, lng: -90.0715 },
-  'Columbus': { lat: 32.4610, lng: -84.9877 }, // Columbus, GA
   'Killeen': { lat: 31.1171, lng: -97.7278 },
   'Port Arthur': { lat: 29.8849, lng: -93.9399 },
   'Beaumont': { lat: 30.0802, lng: -94.1266 }
 };
 
 export const DRIVER_INCENTIVES: Incentive[] = [
+  {
+    id: 'inc-vaca',
+    title: 'Beauty Runn Getaway',
+    description: 'Get 5 new Runners to join. Each must complete 15 Runns/mo and stay for 90 days.',
+    amount: 'Free Vacation',
+    requirement: 5,
+    progress: 0,
+    type: 'referral'
+  },
   {
     id: 'inc-1',
     title: 'Runner Starter Bonus',
@@ -36,292 +43,248 @@ export const DRIVER_INCENTIVES: Incentive[] = [
   }
 ];
 
-// Map of common Zip Codes to City names for auto-resolution
+// Texas Zip Map
 export const ZIP_MAP: Record<string, string> = {
-  // Texas - Houston
   '77001': 'Houston', '77002': 'Houston', '77003': 'Houston', '77004': 'Houston', '77015': 'Houston',
-  // Texas - Dallas
-  '75201': 'Dallas', '75202': 'Dallas', '75203': 'Dallas', '75204': 'Dallas', '75205': 'Dallas',
-  // Texas - Austin
-  '78701': 'Austin', '78702': 'Austin', '78703': 'Austin', '78704': 'Austin', '78705': 'Austin',
-  // Texas - San Antonio
-  '78201': 'San Antonio', '78202': 'San Antonio', '78205': 'San Antonio',
-  // Louisiana - New Orleans
-  '70112': 'New Orleans', '70113': 'New Orleans', '70114': 'New Orleans', '70115': 'New Orleans', '70116': 'New Orleans', '70130': 'New Orleans',
-  // Georgia - Columbus
-  '31901': 'Columbus', '31902': 'Columbus', '31903': 'Columbus', '31904': 'Columbus', '31905': 'Columbus', '31906': 'Columbus', '31907': 'Columbus'
+  '77036': 'Houston', '77021': 'Houston', '77088': 'Houston', '77026': 'Houston', '77060': 'Houston',
+  '77449': 'Katy', '77494': 'Katy',
+  '77478': 'Sugar Land', '77479': 'Sugar Land',
+  '77338': 'Humble', '77396': 'Humble',
+  '77584': 'Pearland', '77581': 'Pearland',
+  '77429': 'Cypress', '77433': 'Cypress',
+  '77379': 'Spring', '77388': 'Spring',
+  '75201': 'Dallas', '78701': 'Austin', '78201': 'San Antonio',
+  '77520': 'Baytown', '77521': 'Baytown',
+  '77502': 'Pasadena', '77504': 'Pasadena'
+};
+
+const IMAGES = {
+  sally: 'https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&q=80&w=800',
+  ulta: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&q=80&w=800',
+  sephora: 'https://images.unsplash.com/photo-1596462502278-27bfdc4033c8?auto=format&fit=crop&q=80&w=800',
+  walmart: 'https://images.unsplash.com/photo-1534723452862-4c874018d66d?auto=format&fit=crop&q=80&w=800',
+  local: [
+    'https://images.unsplash.com/photo-1595425283999-cc3903f56bc2?auto=format&fit=crop&q=80&w=800',
+    'https://images.unsplash.com/photo-1605497788044-5a32c7078486?auto=format&fit=crop&q=80&w=800',
+    'https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&q=80&w=800',
+    'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&q=80&w=800'
+  ],
+};
+
+const generateMajorBrands = () => {
+  const vendors: BeautyVendor[] = [];
+  const cities: Array<'Houston' | 'Dallas' | 'Austin' | 'San Antonio' | 'Fort Worth' | 'Killeen' | 'Port Arthur' | 'Beaumont'> = 
+    ['Houston', 'Dallas', 'Austin', 'San Antonio', 'Fort Worth', 'Killeen', 'Port Arthur', 'Beaumont'];
+  
+  cities.forEach(city => {
+    vendors.push({
+      id: `sally-${city.toLowerCase()}`,
+      name: 'Sally Beauty Supply',
+      image: IMAGES.sally,
+      rating: 4.5,
+      deliveryTime: '20-30 min',
+      category: 'Major Retailer',
+      city: city,
+      zipCode: '',
+      description: 'Professional hair color and care.',
+      isMajorHub: true,
+      topSellerIds: ['p-outre-xp-3x', 'p14', 'p15', 'p-ht-1', 'p-he-1']
+    });
+
+    vendors.push({
+      id: `ulta-${city.toLowerCase()}`,
+      name: 'Ulta Beauty',
+      image: IMAGES.ulta,
+      rating: 4.8,
+      deliveryTime: '25-40 min',
+      category: 'Major Retailer',
+      city: city,
+      zipCode: '',
+      description: 'The premier destination for cosmetics and tools.',
+      isMajorHub: true,
+      topSellerIds: ['p17', 'p18', 'p-ht-2', 'p-he-2', 'p13']
+    });
+  });
+
+  return vendors;
+};
+
+const generateLocalBrands = () => {
+  const localVendors: BeautyVendor[] = [
+    // Houston
+    {
+      id: 'local-hou-77002-downtown',
+      name: 'Downtown Glam Supplies',
+      image: IMAGES.local[0],
+      rating: 4.8,
+      deliveryTime: '15-25 min',
+      category: 'Local Beauty Supply',
+      city: 'Houston',
+      zipCode: '77002',
+      neighborhood: 'Downtown',
+      description: 'Serving the heart of Houston with premium essentials.',
+      isMajorHub: false,
+      topSellerIds: ['p-outre-xp-3x', 'p-he-1', 'p-he-2', 'p11', 'p14']
+    },
+    // Baytown
+    {
+      id: 'local-bay-77521-baytown',
+      name: 'Baytown Beauty Supply',
+      image: IMAGES.local[1],
+      rating: 4.6,
+      deliveryTime: '20-35 min',
+      category: 'Local Beauty Supply',
+      city: 'Houston',
+      zipCode: '77521',
+      neighborhood: 'Baytown',
+      description: 'Your local expert for extensions and braids in Baytown.',
+      isMajorHub: false,
+      topSellerIds: ['p-outre-xp-3x', 'p11', 'p14', 'p-ht-1']
+    },
+    // Pasadena
+    {
+      id: 'local-pas-77504-pasadena',
+      name: 'Pasadena Hair & Beauty',
+      image: IMAGES.local[2],
+      rating: 4.7,
+      deliveryTime: '15-30 min',
+      category: 'Local Beauty Supply',
+      city: 'Houston',
+      zipCode: '77504',
+      neighborhood: 'Pasadena',
+      description: 'Best local rates on hair dye and styling tools in Pasadena.',
+      isMajorHub: false,
+      topSellerIds: ['p15', 'p16', 'p-ht-2', 'p-he-3']
+    }
+  ];
+
+  return localVendors;
 };
 
 export const VENDORS: BeautyVendor[] = [
-  {
-    id: 'v1',
-    name: 'Sally Beauty Supply',
-    image: 'https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&q=80&w=800',
-    rating: 4.5,
-    deliveryTime: '20-30 min',
-    category: 'Hair & Salon',
-    city: 'Houston',
-    zipCode: '77002',
-    neighborhood: 'Downtown',
-    description: 'Professional-grade hair color, care, and styling tools.',
-    isMajorHub: true
-  },
-  {
-    id: 'v-ga1',
-    name: 'Columbus Glam Depot',
-    image: 'https://images.unsplash.com/photo-1596462502278-27bfdc4033c8?auto=format&fit=crop&q=80&w=800',
-    rating: 4.7,
-    deliveryTime: '15-25 min',
-    category: 'Full Supply',
-    city: 'Columbus',
-    zipCode: '31901',
-    neighborhood: 'Uptown',
-    description: 'Georgia\'s premier beauty distribution center.',
-    isMajorHub: true
-  },
-  {
-    id: 'v-la1',
-    name: 'NOLA Curls & Color',
-    image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=800',
-    rating: 4.9,
-    deliveryTime: '10-20 min',
-    category: 'Textured Hair',
-    city: 'New Orleans',
-    zipCode: '70130',
-    neighborhood: 'Garden District',
-    description: 'Specializing in care for natural textures and vivid colors.',
-    isMajorHub: true
-  },
-  {
-    id: 'v11',
-    name: 'Uptown Beauty Supply',
-    image: 'https://images.unsplash.com/photo-1595425283999-cc3903f56bc2?auto=format&fit=crop&q=80&w=800',
-    rating: 4.6,
-    deliveryTime: '15-25 min',
-    category: 'Hair & Cosmetics',
-    city: 'Houston',
-    zipCode: '77015',
-    neighborhood: 'Northshore',
-    description: 'Specializing in extensions, wigs, and professional braiding supplies.',
-    isMajorHub: true
-  },
-  {
-    id: 'v12',
-    name: 'Pro Braiding Boutique',
-    image: 'https://images.unsplash.com/photo-1605497788044-5a32c7078486?auto=format&fit=crop&q=80&w=800',
-    rating: 4.9,
-    deliveryTime: '10-20 min',
-    category: 'Hair',
-    city: 'Houston',
-    zipCode: '77015',
-    neighborhood: 'Uvalde',
-    description: 'The destination for professional braiding hair and edge controls.',
-    isMajorHub: false
-  },
-  {
-    id: 'v3',
-    name: 'Ulta Beauty',
-    image: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&q=80&w=800',
-    rating: 4.7,
-    deliveryTime: '25-35 min',
-    category: 'Cosmetics',
-    city: 'Dallas',
-    zipCode: '75201',
-    neighborhood: 'Downtown',
-    description: 'The premier destination for all things beauty.',
-    isMajorHub: true
-  }
+  ...generateMajorBrands(),
+  ...generateLocalBrands()
 ];
 
 export const PRODUCTS: Product[] = [
+  // --- BRAIDING HAIR ---
   { 
-    id: 'p1', 
-    vendorId: 'v11', 
-    name: 'X-Pression Pre-Stretched', 
-    price: 5.99, 
+    id: 'p-outre-xp-3x', 
+    vendorId: 'any', 
+    name: 'Outre X-Pression Pre-Stretched 3X', 
     image: 'https://images.unsplash.com/photo-1629732047847-50bad75599e5?auto=format&fit=crop&q=80&w=400', 
     category: 'Braiding Hair', 
-    description: '48 inch pre-stretched synthetic braiding hair.' 
-  },
-  { 
-    id: 'p2', 
-    vendorId: 'v11', 
-    name: 'Sensationnel Empress Wig', 
-    price: 45.00, 
-    image: 'https://images.unsplash.com/photo-1595425283999-cc3903f56bc2?auto=format&fit=crop&q=80&w=400', 
-    category: 'Synthetic Hair', 
-    description: 'Lace front synthetic wig, heat resistant fiber.' 
-  },
-  { 
-    id: 'p3', 
-    vendorId: 'v11', 
-    name: 'Raw Indian Loose Wave', 
-    price: 110.00, 
-    image: 'https://images.unsplash.com/photo-1594433030833-220736bb5ba3?auto=format&fit=crop&q=80&w=400', 
-    category: 'Human Hair', 
-    description: '100% Raw Indian human hair, 20 inch bundle.' 
-  },
-  { 
-    id: 'p4', 
-    vendorId: 'v11', 
-    name: 'Brazilian Body Wave 3pc', 
-    price: 185.00, 
-    image: 'https://images.unsplash.com/photo-1580618672591-eb180b1a973f?auto=format&fit=crop&q=80&w=400', 
-    category: 'Bundles', 
-    description: 'Grade 12A Brazilian Body Wave 3 bundle deal.' 
-  },
-  { 
-    id: 'p5', 
-    vendorId: 'v11', 
-    name: 'Outre Velvet Remi', 
-    price: 32.99, 
-    image: 'https://images.unsplash.com/photo-1519735897302-3f62986423ca?auto=format&fit=crop&q=80&w=400', 
-    category: 'Packaged Hair', 
-    description: '10 inch Remi human hair blend weave.' 
-  },
-  { 
-    id: 'p6', 
-    vendorId: 'v12', 
-    name: 'Ebin 24h Edge Tamer', 
-    price: 12.99, 
-    image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&q=80&w=400', 
-    category: 'Other Beauty Essentials', 
-    description: 'Extreme firm hold edge control for styling.' 
-  },
-  { 
-    id: 'p7', 
-    vendorId: 'v12', 
-    name: 'Lace Tint Spray', 
-    price: 14.50, 
-    image: 'https://images.unsplash.com/photo-1596462502278-27bfdc4033c8?auto=format&fit=crop&q=80&w=400', 
-    category: 'Other Beauty Essentials', 
-    description: 'Medium brown lace tint for seamless wig blending.' 
-  },
-  { 
-    id: 'p8', 
-    vendorId: 'v1', 
-    name: 'Pro Ionic Blow Dryer', 
-    price: 85.00, 
-    image: 'https://images.unsplash.com/photo-1522338140262-f46f5913618a?auto=format&fit=crop&q=80&w=400', 
-    category: 'Hot Tools', 
-    description: 'Professional 2200W ionic dryer for fast salon results.' 
-  },
-  { 
-    id: 'p9', 
-    vendorId: 'v1', 
-    name: 'Ceramic Flat Iron', 
-    price: 65.00, 
-    image: 'https://images.unsplash.com/photo-1522337094846-8a818192de1f?auto=format&fit=crop&q=80&w=400', 
-    category: 'Hot Tools', 
-    description: '1-inch ceramic plates for smooth, frizz-free hair.' 
-  },
-  { 
-    id: 'p10', 
-    vendorId: 'v3', 
-    name: 'Shampoo & Conditioner Duo', 
-    price: 34.00, 
-    image: 'https://images.unsplash.com/photo-1556229010-6c3f2c9ca5f8?auto=format&fit=crop&q=80&w=400', 
-    category: 'Shampoo & Conditioner', 
-    description: 'Hydrating salon-grade set for all hair types.' 
+    description: '100% Kanekalon 52" pre-stretched braiding hair. Pre-layered for time-saving and natural finish. 3 bundles per pack.',
+    priceRange: { min: 5.99, max: 8.50 },
+    marketComparison: { sally: 8.99, amazon: 7.25, retailAvg: 8.12 },
+    options: {
+      colors: ['1B (Jet Black)', '2 (Dark Brown)', '4 (Medium Brown)', '27 (Honey Blonde)', '30 (Light Auburn)', 'BUG (Burgundy)', '613 (Platinum)'],
+      lengths: ['52"']
+    },
+    salesVolume: 4500 
   },
   { 
     id: 'p11', 
-    vendorId: 'v12', 
-    name: 'Ghost Bond XL Glue', 
-    price: 22.99, 
-    image: 'https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?auto=format&fit=crop&q=80&w=400', 
-    category: 'Lace Adhesives/ Bond Glue', 
-    description: 'Strong hold lace adhesive for wigs and hair systems.' 
+    vendorId: 'any', 
+    name: 'Ruwa Water Resistant Braid', 
+    image: 'https://images.unsplash.com/photo-1594433030833-220736bb5ba3?auto=format&fit=crop&q=80&w=400', 
+    category: 'Braiding Hair', 
+    description: 'Quick-dry, pre-stretched braiding hair. Great for active styles and water-friendly looks.',
+    priceRange: { min: 5.99, max: 8.99 },
+    marketComparison: { sally: 9.49, amazon: 8.00, retailAvg: 8.75 },
+    options: {
+      colors: ['1', '1B', '2', '4', '33', '99J'],
+    },
+    salesVolume: 2400 
+  },
+
+  // --- HAIR EXTENSIONS ---
+  { 
+    id: 'p-he-1', 
+    vendorId: 'any', 
+    name: '100% Virgin Brazilian Bundles', 
+    image: 'https://images.unsplash.com/photo-1605497788044-5a32c7078486?auto=format&fit=crop&q=80&w=400', 
+    category: 'Hair Extensions', 
+    description: 'Grade 12A human hair extensions. Double wefted and tangle-free bundles.',
+    priceRange: { min: 45.00, max: 120.00 },
+    marketComparison: { ulta: 155.00, amazon: 65.00, retailAvg: 110.00 },
+    options: {
+      lengths: ['12"', '16"', '20"', '24"', '28"'],
+      types: ['Straight', 'Body Wave', 'Deep Wave']
+    },
+    salesVolume: 1800 
   },
   { 
-    id: 'p12', 
-    vendorId: 'v-la1', 
-    name: 'Silk Sleep Bonnet', 
-    price: 15.99, 
-    image: 'https://images.unsplash.com/photo-1595535373192-fc8935bc82c0?auto=format&fit=crop&q=80&w=400', 
-    category: 'Headwraps & Hair Ties', 
-    description: 'Premium satin bonnet to preserve hairstyles overnight.' 
+    id: 'p-he-2', 
+    vendorId: 'any', 
+    name: 'Clip-In Human Hair Set', 
+    image: 'https://images.unsplash.com/photo-1620331311520-246422ff83f9?auto=format&fit=crop&q=80&w=400', 
+    category: 'Hair Extensions', 
+    description: '7-piece human hair clip-in set for instant volume and length. Silicone-lined clips for secure hold.',
+    priceRange: { min: 89.00, max: 149.00 },
+    marketComparison: { ulta: 199.00, amazon: 95.00, retailAvg: 147.00 },
+    options: {
+      colors: ['Jet Black', 'Natural Brown', 'Honey Blonde'],
+      lengths: ['18"', '22"']
+    },
+    salesVolume: 1100 
   },
-  { 
-    id: 'p13', 
-    vendorId: 'v-la1', 
-    name: 'Stocking Wave Cap', 
-    price: 4.99, 
-    image: 'https://images.unsplash.com/photo-1582095133179-bfd08e2fc6b3?auto=format&fit=crop&q=80&w=400', 
-    category: 'Headwraps & Hair Ties', 
-    description: 'Breathable wave cap for styling and maintenance.' 
-  },
+
+  // --- HAIR DYE ---
   { 
     id: 'p14', 
-    vendorId: 'v-ga1', 
-    name: '3D Mink Eyelashes', 
-    price: 18.00, 
-    image: 'https://images.unsplash.com/photo-1583241475878-38e7df5d469a?auto=format&fit=crop&q=80&w=400', 
-    category: 'Other Beauty Essentials', 
-    description: 'Hand-crafted voluminous mink lashes.' 
+    vendorId: 'any', 
+    name: 'Adore Semi-Permanent Color', 
+    image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&q=80&w=400', 
+    category: 'Hair Dye', 
+    description: 'Professional semi-permanent hair color with no ammonia, no peroxide, and no alcohol.',
+    priceRange: { min: 5.50, max: 8.00 },
+    marketComparison: { sally: 8.49, amazon: 7.25, retailAvg: 7.85 },
+    options: {
+      colors: ['Honey Brown', 'Cinnamon', 'Crimson', 'Jet Black']
+    },
+    salesVolume: 2900 
   },
   { 
     id: 'p15', 
-    vendorId: 'v11', 
-    name: 'Sew-in Needle & Thread', 
-    price: 7.50, 
-    image: 'https://images.unsplash.com/photo-1506806732259-39c2d7168935?auto=format&fit=crop&q=80&w=400', 
-    category: 'Other Beauty Essentials', 
-    description: 'Heavy duty C-curve needles and black nylon thread.' 
-  },
-  { 
-    id: 'p16', 
-    vendorId: 'v3', 
-    name: 'Precision Tweezers', 
-    price: 12.00, 
-    image: 'https://images.unsplash.com/photo-1621333100102-13ad9ee18c31?auto=format&fit=crop&q=80&w=400', 
-    category: 'Other Beauty Essentials', 
-    description: 'Slant-tip tweezers for perfect brow shaping.' 
-  },
-  { 
-    id: 'p17', 
-    vendorId: 'v12', 
-    name: 'Styling Comb Set', 
-    price: 9.99, 
-    image: 'https://images.unsplash.com/photo-1590540179852-2110a54f813a?auto=format&fit=crop&q=80&w=400', 
-    category: 'Other Beauty Essentials', 
-    description: 'Heat resistant rat-tail and styling combs.' 
-  },
-  { 
-    id: 'p18', 
-    vendorId: 'v-ga1', 
-    name: 'Bulk Rubber Bands', 
-    price: 3.50, 
-    image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=400', 
-    category: 'Headwraps & Hair Ties', 
-    description: 'Non-break elastic bands for braiding and ponytails.' 
-  },
-  { 
-    id: 'p19', 
-    vendorId: 'v11', 
-    name: 'Hold Me Tight Hair Ties', 
-    price: 4.50, 
-    image: 'https://images.unsplash.com/photo-1582101344686-30239023190f?auto=format&fit=crop&q=80&w=400', 
-    category: 'Headwraps & Hair Ties', 
-    description: 'Seamless snag-free hair ties for all hair volumes.' 
-  },
-  { 
-    id: 'p20', 
-    vendorId: 'v1', 
-    name: 'Professional Permanent Dye', 
-    price: 15.00, 
-    image: 'https://images.unsplash.com/photo-1633681926022-84c23e8cb2d6?auto=format&fit=crop&q=80&w=400', 
+    vendorId: 'any', 
+    name: 'Wella Color Charm Toner', 
+    image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=400', 
     category: 'Hair Dye', 
-    description: 'Vibrant, long-lasting professional hair color.' 
+    description: 'Liquid permanent toner for professional salon results. Neutralizes brassiness.',
+    priceRange: { min: 8.99, max: 12.99 },
+    marketComparison: { sally: 14.29, amazon: 11.50, retailAvg: 12.90 },
+    options: {
+      colors: ['T18 White Lady', 'T14 Pale Ash', 'T11 Lightest Beige']
+    },
+    salesVolume: 2600 
+  },
+
+  // --- HOT TOOLS ---
+  { 
+    id: 'p-ht-1', 
+    vendorId: 'any', 
+    name: 'Pro Ionic Hair Dryer', 
+    image: 'https://images.unsplash.com/photo-1522338140262-f46f5913618a?auto=format&fit=crop&q=80&w=400', 
+    category: 'Hot Tools', 
+    description: 'Salon-grade 1875W ionic hair dryer for fast drying and frizz reduction.',
+    priceRange: { min: 45.00, max: 85.00 },
+    marketComparison: { ulta: 120.00, amazon: 55.00, retailAvg: 87.50 },
+    salesVolume: 2100 
   },
   { 
-    id: 'p21', 
-    vendorId: 'v-la1', 
-    name: 'Semi-Permanent Color Wash', 
-    price: 12.50, 
-    image: 'https://images.unsplash.com/photo-1620331311520-246422fd82f9?auto=format&fit=crop&q=80&w=400', 
-    category: 'Hair Dye', 
-    description: 'Gentle semi-permanent wash for refreshing tones.' 
+    id: 'p-ht-2', 
+    vendorId: 'any', 
+    name: 'Ceramic Flat Iron 1"', 
+    image: 'https://images.unsplash.com/photo-1554519934-e32b1629d9ee?auto=format&fit=crop&q=80&w=400', 
+    category: 'Hot Tools', 
+    description: 'Professional ceramic styling iron for smooth, shiny finishes. Heats up to 450°F.',
+    priceRange: { min: 35.00, max: 120.00 },
+    marketComparison: { ulta: 160.00, sally: 99.00, amazon: 45.00, retailAvg: 101.00 },
+    options: {
+      types: ['Digital Control', 'Manual Dial']
+    },
+    salesVolume: 1950 
   }
 ];
 
