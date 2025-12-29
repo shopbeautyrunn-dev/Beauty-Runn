@@ -88,7 +88,7 @@ const generateMajorBrands = () => {
       zipCode: '',
       description: 'Professional hair color and care.',
       isMajorHub: true,
-      topSellerIds: ['p-outre-xp-3x', 'p14', 'p15', 'p-ht-1', 'p-he-1']
+      topSellerIds: ['p-outre-xp-3x', 'p-ht-2', 'p-dye-wella', 'p-he-clipin']
     });
 
     vendors.push({
@@ -102,7 +102,7 @@ const generateMajorBrands = () => {
       zipCode: '',
       description: 'The premier destination for cosmetics and tools.',
       isMajorHub: true,
-      topSellerIds: ['p17', 'p18', 'p-ht-2', 'p-he-2', 'p13']
+      topSellerIds: ['p-he-bundles', 'p-ht-1', 'p-dye-adore', 'p-ruwa-braid']
     });
   });
 
@@ -111,7 +111,6 @@ const generateMajorBrands = () => {
 
 const generateLocalBrands = () => {
   const localVendors: BeautyVendor[] = [
-    // Houston
     {
       id: 'local-hou-77002-downtown',
       name: 'Downtown Glam Supplies',
@@ -124,9 +123,8 @@ const generateLocalBrands = () => {
       neighborhood: 'Downtown',
       description: 'Serving the heart of Houston with premium essentials.',
       isMajorHub: false,
-      topSellerIds: ['p-outre-xp-3x', 'p-he-1', 'p-he-2', 'p11', 'p14']
+      topSellerIds: ['p-outre-xp-3x', 'p-dye-adore', 'p-he-bundles']
     },
-    // Baytown
     {
       id: 'local-bay-77521-baytown',
       name: 'Baytown Beauty Supply',
@@ -139,9 +137,8 @@ const generateLocalBrands = () => {
       neighborhood: 'Baytown',
       description: 'Your local expert for extensions and braids in Baytown.',
       isMajorHub: false,
-      topSellerIds: ['p-outre-xp-3x', 'p11', 'p14', 'p-ht-1']
+      topSellerIds: ['p-outre-xp-3x', 'p-ruwa-braid', 'p-ht-1']
     },
-    // Pasadena
     {
       id: 'local-pas-77504-pasadena',
       name: 'Pasadena Hair & Beauty',
@@ -154,7 +151,7 @@ const generateLocalBrands = () => {
       neighborhood: 'Pasadena',
       description: 'Best local rates on hair dye and styling tools in Pasadena.',
       isMajorHub: false,
-      topSellerIds: ['p15', 'p16', 'p-ht-2', 'p-he-3']
+      topSellerIds: ['p-dye-wella', 'p-dye-adore', 'p-ht-2']
     }
   ];
 
@@ -172,105 +169,106 @@ export const PRODUCTS: Product[] = [
     id: 'p-outre-xp-3x', 
     vendorId: 'any', 
     name: 'Outre X-Pression Pre-Stretched 3X', 
-    image: 'https://images.unsplash.com/photo-1629732047847-50bad75599e5?auto=format&fit=crop&q=80&w=400', 
-    category: 'Braiding Hair', 
-    description: '100% Kanekalon 52" pre-stretched braiding hair. Pre-layered for time-saving and natural finish. 3 bundles per pack.',
-    priceRange: { min: 5.99, max: 8.50 },
-    marketComparison: { sally: 8.99, amazon: 7.25, retailAvg: 8.12 },
-    options: {
-      colors: ['1B (Jet Black)', '2 (Dark Brown)', '4 (Medium Brown)', '27 (Honey Blonde)', '30 (Light Auburn)', 'BUG (Burgundy)', '613 (Platinum)'],
-      lengths: ['52"']
-    },
-    salesVolume: 4500 
-  },
-  { 
-    id: 'p11', 
-    vendorId: 'any', 
-    name: 'Ruwa Water Resistant Braid', 
     image: 'https://images.unsplash.com/photo-1594433030833-220736bb5ba3?auto=format&fit=crop&q=80&w=400', 
     category: 'Braiding Hair', 
-    description: 'Quick-dry, pre-stretched braiding hair. Great for active styles and water-friendly looks.',
-    priceRange: { min: 5.99, max: 8.99 },
-    marketComparison: { sally: 9.49, amazon: 8.00, retailAvg: 8.75 },
+    description: '52" Pre-stretched human-feel braiding hair. The standard for Houston stylists.',
+    priceRange: { min: 5.49, max: 7.99 },
+    marketComparison: { sally: 8.99, amazon: 7.50, retailAvg: 8.25 },
     options: {
-      colors: ['1', '1B', '2', '4', '33', '99J'],
+      colors: ['1B', '2', '4', '27', '30', 'BUG', '613'],
+      lengths: ['52"']
     },
-    salesVolume: 2400 
-  },
-
-  // --- HAIR EXTENSIONS ---
-  { 
-    id: 'p-he-1', 
-    vendorId: 'any', 
-    name: '100% Virgin Brazilian Bundles', 
-    image: 'https://images.unsplash.com/photo-1605497788044-5a32c7078486?auto=format&fit=crop&q=80&w=400', 
-    category: 'Hair Extensions', 
-    description: 'Grade 12A human hair extensions. Double wefted and tangle-free bundles.',
-    priceRange: { min: 45.00, max: 120.00 },
-    marketComparison: { ulta: 155.00, amazon: 65.00, retailAvg: 110.00 },
-    options: {
-      lengths: ['12"', '16"', '20"', '24"', '28"'],
-      types: ['Straight', 'Body Wave', 'Deep Wave']
-    },
-    salesVolume: 1800 
+    salesVolume: 8500 
   },
   { 
-    id: 'p-he-2', 
+    id: 'p-ruwa-braid', 
     vendorId: 'any', 
-    name: 'Clip-In Human Hair Set', 
-    image: 'https://images.unsplash.com/photo-1620331311520-246422ff83f9?auto=format&fit=crop&q=80&w=400', 
-    category: 'Hair Extensions', 
-    description: '7-piece human hair clip-in set for instant volume and length. Silicone-lined clips for secure hold.',
-    priceRange: { min: 89.00, max: 149.00 },
-    marketComparison: { ulta: 199.00, amazon: 95.00, retailAvg: 147.00 },
+    name: 'Ruwa 3X Pre-Stretched Braid', 
+    image: 'https://images.unsplash.com/photo-1629732047847-50bad75599e5?auto=format&fit=crop&q=80&w=400', 
+    category: 'Braiding Hair', 
+    description: 'Water resistant, lightweight, and fast drying. Great for Houston humidity.',
+    priceRange: { min: 6.99, max: 8.50 },
+    marketComparison: { sally: 9.49, amazon: 8.25, retailAvg: 8.87 },
     options: {
-      colors: ['Jet Black', 'Natural Brown', 'Honey Blonde'],
-      lengths: ['18"', '22"']
+      colors: ['1', '1B', '2', '4', '99J'],
+      lengths: ['48"']
     },
-    salesVolume: 1100 
+    salesVolume: 4200 
   },
 
   // --- HAIR DYE ---
   { 
-    id: 'p14', 
+    id: 'p-dye-adore', 
     vendorId: 'any', 
-    name: 'Adore Semi-Permanent Color', 
+    name: 'Adore Semi-Permanent Hair Color', 
     image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&q=80&w=400', 
     category: 'Hair Dye', 
-    description: 'Professional semi-permanent hair color with no ammonia, no peroxide, and no alcohol.',
-    priceRange: { min: 5.50, max: 8.00 },
-    marketComparison: { sally: 8.49, amazon: 7.25, retailAvg: 7.85 },
+    description: 'The Houston local favorite. No ammonia, no alcohol, no peroxide.',
+    priceRange: { min: 4.99, max: 6.50 },
+    marketComparison: { sally: 7.99, amazon: 7.25, retailAvg: 7.62 },
     options: {
-      colors: ['Honey Brown', 'Cinnamon', 'Crimson', 'Jet Black']
+      colors: ['Honey Brown', 'Jet Black', 'Crimson', 'Cinnamon', 'Cajun Spice']
     },
-    salesVolume: 2900 
+    salesVolume: 9800 
   },
   { 
-    id: 'p15', 
+    id: 'p-dye-wella', 
     vendorId: 'any', 
-    name: 'Wella Color Charm Toner', 
+    name: 'Wella Color Charm Liquid Toner', 
     image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=400', 
     category: 'Hair Dye', 
-    description: 'Liquid permanent toner for professional salon results. Neutralizes brassiness.',
-    priceRange: { min: 8.99, max: 12.99 },
-    marketComparison: { sally: 14.29, amazon: 11.50, retailAvg: 12.90 },
+    description: 'Professional liquid toner for salon results. The T18 White Lady specialist.',
+    priceRange: { min: 7.50, max: 9.99 },
+    marketComparison: { sally: 12.49, amazon: 11.50, retailAvg: 11.99 },
     options: {
       colors: ['T18 White Lady', 'T14 Pale Ash', 'T11 Lightest Beige']
     },
-    salesVolume: 2600 
+    salesVolume: 5600 
+  },
+
+  // --- HAIR EXTENSIONS ---
+  { 
+    id: 'p-he-bundles', 
+    vendorId: 'any', 
+    name: 'Virgin Brazilian Bundle Set (3pcs)', 
+    image: 'https://images.unsplash.com/photo-1605497788044-5a32c7078486?auto=format&fit=crop&q=80&w=400', 
+    category: 'Hair Extensions', 
+    description: '100% Unprocessed human hair bundles. Silky, thick, and durable.',
+    priceRange: { min: 55.00, max: 95.00 },
+    marketComparison: { ulta: 165.00, amazon: 75.00, retailAvg: 120.00 },
+    options: {
+      lengths: ['18"', '20"', '22"', '24"'],
+      types: ['Body Wave', 'Straight', 'Deep Wave']
+    },
+    salesVolume: 3100 
+  },
+  { 
+    id: 'p-he-clipin', 
+    vendorId: 'any', 
+    name: 'Remi Human Hair Clip-In Set', 
+    image: 'https://images.unsplash.com/photo-1620331311520-246422ff83f9?auto=format&fit=crop&q=80&w=400', 
+    category: 'Hair Extensions', 
+    description: '7-piece instant length set. Easy application for home styling.',
+    priceRange: { min: 75.00, max: 130.00 },
+    marketComparison: { ulta: 185.00, amazon: 95.00, retailAvg: 140.00 },
+    options: {
+      colors: ['Jet Black', 'Natural Brown', 'Blonde Mix'],
+      lengths: ['18"', '22"']
+    },
+    salesVolume: 2200 
   },
 
   // --- HOT TOOLS ---
   { 
     id: 'p-ht-1', 
     vendorId: 'any', 
-    name: 'Pro Ionic Hair Dryer', 
+    name: 'Professional Ionic Hair Dryer', 
     image: 'https://images.unsplash.com/photo-1522338140262-f46f5913618a?auto=format&fit=crop&q=80&w=400', 
     category: 'Hot Tools', 
-    description: 'Salon-grade 1875W ionic hair dryer for fast drying and frizz reduction.',
-    priceRange: { min: 45.00, max: 85.00 },
-    marketComparison: { ulta: 120.00, amazon: 55.00, retailAvg: 87.50 },
-    salesVolume: 2100 
+    description: 'Fast-drying ionic technology. Used in top Houston salons.',
+    priceRange: { min: 35.00, max: 65.00 },
+    marketComparison: { ulta: 110.00, sally: 85.00, amazon: 55.00, retailAvg: 83.33 },
+    salesVolume: 1800 
   },
   { 
     id: 'p-ht-2', 
@@ -278,13 +276,10 @@ export const PRODUCTS: Product[] = [
     name: 'Ceramic Flat Iron 1"', 
     image: 'https://images.unsplash.com/photo-1554519934-e32b1629d9ee?auto=format&fit=crop&q=80&w=400', 
     category: 'Hot Tools', 
-    description: 'Professional ceramic styling iron for smooth, shiny finishes. Heats up to 450°F.',
-    priceRange: { min: 35.00, max: 120.00 },
-    marketComparison: { ulta: 160.00, sally: 99.00, amazon: 45.00, retailAvg: 101.00 },
-    options: {
-      types: ['Digital Control', 'Manual Dial']
-    },
-    salesVolume: 1950 
+    description: 'Sleek ceramic plates for 450°F styling. Instant heat-up.',
+    priceRange: { min: 25.00, max: 55.00 },
+    marketComparison: { ulta: 140.00, sally: 95.00, amazon: 45.00, retailAvg: 93.33 },
+    salesVolume: 2500 
   }
 ];
 
