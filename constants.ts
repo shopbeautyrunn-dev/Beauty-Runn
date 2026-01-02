@@ -284,10 +284,10 @@ export const PRODUCTS: Product[] = [
 ];
 
 export const COLORS = {
-  primary: '#D63384',
-  secondary: '#1A1A1A',
-  accent: '#D4AF37',
-  light: '#FDFCFB',
-  dark: '#111111',
-  success: '#008345'
+  primary: '#1A1A1A',
+  secondary: '#EDE4DB',
+  accent: '#C48B8B',
+  light: '#F9F6F3',
+  dark: '#000000',
+  success: '#2D5A27'
 };

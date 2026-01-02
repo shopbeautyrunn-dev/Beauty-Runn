@@ -7,47 +7,80 @@
   <title>Beauty Runn - Glow On. We’ll Handle It</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,900;1,900&display=swap" rel="stylesheet">
   <style>
     :root {
       --sat: env(safe-area-inset-top);
       --sar: env(safe-area-inset-right);
       --sab: env(safe-area-inset-bottom);
       --sal: env(safe-area-inset-left);
-      --luxury-pink: #D63384;
-      --luxury-gold: #D4AF37;
+      --warm-taupe: #EDE4DB;
+      --light-taupe: #F9F6F3;
+      --rose-accent: #C48B8B;
+      --deep-black: #1A1A1A;
     }
     body { 
       font-family: 'Inter', sans-serif; 
       -webkit-tap-highlight-color: transparent;
       overscroll-behavior-y: contain;
-      background-color: #ffffff;
-      color: #111111;
+      background-color: var(--warm-taupe);
+      color: var(--deep-black);
     }
     
+    .font-serif { font-family: 'Playfair Display', serif; }
+
     .safe-top { padding-top: var(--sat); }
     .safe-bottom { padding-bottom: var(--sab); }
     
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     
-    .animate-fadeIn { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .animate-fadeIn { animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-splash-logo { animation: splashLogo 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    @keyframes splashLogo {
+      0% { opacity: 0; transform: scale(0.9); filter: blur(10px); }
+      100% { opacity: 1; transform: scale(1); filter: blur(0); }
+    }
+
+    .animate-slideUp { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(40px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
     .shadow-luxury {
       box-shadow: 0 10px 40px rgba(0,0,0,0.03);
     }
+
+    .rose-glow:active {
+      box-shadow: 0 0 15px var(--rose-accent);
+      transition: box-shadow 0.2s ease;
+    }
+
+    .shimmer-text {
+      background: linear-gradient(90deg, var(--deep-black) 0%, var(--rose-accent) 50%, var(--deep-black) 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shimmer 3s linear infinite;
+    }
+
+    @keyframes shimmer {
+      to { background-position: 200% center; }
+    }
     
     ::selection {
-      background-color: var(--luxury-pink);
+      background-color: var(--rose-accent);
       color: white;
     }
 
     input::placeholder {
-      color: #D1D1D1;
+      color: #A1A1A1;
       font-weight: 500;
     }
   </style>
