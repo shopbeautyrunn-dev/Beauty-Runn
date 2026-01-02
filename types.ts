@@ -23,6 +23,9 @@ export interface BeautyVendor {
   topSellerIds?: string[];
   distance?: number;
   velocity?: number; // Minutes for sorting
+  isAIVerified?: boolean;
+  pricingTier?: 'STANDARD' | 'PREMIUM' | 'ECONOMY';
+  verificationNotes?: string;
 }
 
 export interface MarketComparison {
@@ -35,6 +38,7 @@ export interface Product {
   id: string;
   vendorId: string;
   name: string;
+  brand: string;
   tagline?: string;
   priceRange: { min: number; max: number };
   marketComparison?: MarketComparison;
@@ -42,6 +46,7 @@ export interface Product {
   fallbackImage?: string;
   description: string;
   category: string;
+  notes?: string;
   salesVolume?: number;
   options?: {
     colors?: string[];

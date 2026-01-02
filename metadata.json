@@ -1,6 +1,6 @@
 {
   "name": "Beauty Runn",
-  "description": "Glow On. We’ll Handle It. Professional beauty products delivered to your door in minutes.",
+  "description": "Houston's Neighborhood Beauty Store Delivery. Professional beauty products delivered to your door in minutes.",
   "requestFramePermissions": [
     "geolocation",
     "camera"
