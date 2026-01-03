@@ -22,7 +22,7 @@ export interface BeautyVendor {
   isSmallChain?: boolean;
   topSellerIds?: string[];
   distance?: number;
-  velocity?: number; // Minutes for sorting
+  velocity?: number; 
   isAIVerified?: boolean;
   isActive?: boolean;
   pricingTier?: 'STANDARD' | 'PREMIUM' | 'ECONOMY';
@@ -114,7 +114,7 @@ export interface AppNotification {
   id: string;
   title: string;
   body: string;
-  type: 'order' | 'promo' | 'message';
+  type: 'order' | 'promo' | 'message' | 'success';
   timestamp: number;
 }
 

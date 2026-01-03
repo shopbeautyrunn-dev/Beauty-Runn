@@ -79,6 +79,15 @@
       50% { opacity: 0.8; transform: scale(1.03); }
     }
 
+    .animate-floating-heart {
+      animation: floatingHeart 3.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+    }
+
+    @keyframes floatingHeart {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-8px) scale(1.1); }
+    }
+
     .badge-shimmer {
       position: relative;
       overflow: hidden;

@@ -166,5 +166,56 @@ export const PRODUCTS: Product[] = [
     priceRange: { min: 145.00, max: 180.00 },
     isBestSeller: true,
     stockLevel: 4
+  },
+  {
+    id: 'p-eco-olive',
+    vendorId: 'any',
+    name: 'Eco Styler Olive Oil Gel',
+    brand: 'EcoCo',
+    tagline: 'Classic 32oz Jar',
+    image: 'https://m.media-amazon.com/images/I/81bN8WvW-3L._SL1500_.jpg',
+    category: 'Hair Care & Styling Products',
+    description: 'The iconic green gel in the large retail tub with the black lid.',
+    priceRange: { min: 5.99, max: 8.99 },
+    isBestSeller: true,
+    stockLevel: 200
+  },
+  {
+    id: 'p-got2b-freeze',
+    vendorId: 'any',
+    name: 'Got2b Glued Freeze Spray',
+    brand: 'Schwarzkopf',
+    tagline: '12oz Yellow Aerosol Can',
+    image: 'https://m.media-amazon.com/images/I/51Hk88GfGTL._SL1000_.jpg',
+    category: 'Hair Care & Styling Products',
+    description: 'The viral yellow spray bottle used globally for wig installs and edge control.',
+    priceRange: { min: 6.49, max: 9.99 },
+    isTrending: true,
+    stockLevel: 64
+  },
+  {
+    id: 'p-shinenjam',
+    vendorId: 'any',
+    name: "Shine 'n Jam Conditioning Gel",
+    brand: 'Ampro',
+    tagline: 'Retail Orange Jar',
+    image: 'https://m.media-amazon.com/images/I/71Z-T7o6y5L._SL1500_.jpg',
+    category: 'Hair Care & Styling Products',
+    description: 'Extra hold braiding gel in the classic orange jar. Authentic retail presentation.',
+    priceRange: { min: 6.99, max: 10.50 },
+    isBestSeller: true,
+    stockLevel: 45
+  },
+  {
+    id: 'p-denman-d3',
+    vendorId: 'any',
+    name: 'Denman D3 Styling Brush',
+    brand: 'Denman',
+    tagline: 'Original Retail Box',
+    image: 'https://m.media-amazon.com/images/I/61J6OaKkYkL._SL1500_.jpg',
+    category: 'Hair Tools',
+    description: 'Genuine Denman 7-row styling brush in original white/red retail box.',
+    priceRange: { min: 19.99, max: 24.99 },
+    stockLevel: 15
   }
 ];

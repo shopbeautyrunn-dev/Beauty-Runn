@@ -41,6 +41,42 @@ export const validateStoreAuthenticity = async (storeName: string, address: stri
   }
 };
 
+/**
+ * Generates a realistic product photography visual for a beauty item.
+ * Uses gemini-2.5-flash-image for standard catalog quality.
+ */
+export const generateRealisticProductVisual = async (productName: string, brand: string, description: string) => {
+  try {
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    const prompt = `High-quality realistic professional product photography of "${productName}" by ${brand}. 
+    Description: ${description}. 
+    The product is in its original retail packaging, shown clearly on a clean, minimal, warm taupe studio background that matches a high-end beauty app. 
+    Natural soft studio lighting, sharp focus on packaging details, authentic labels, elegant presentation. 8k resolution.`;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash-image',
+      contents: { parts: [{ text: prompt }] },
+      config: {
+        imageConfig: {
+          aspectRatio: "1:1"
+        }
+      },
+    });
+
+    if (response.candidates?.[0]?.content?.parts) {
+      for (const part of response.candidates[0].content.parts) {
+        if (part.inlineData) {
+          return `data:image/png;base64,${part.inlineData.data}`;
+        }
+      }
+    }
+    return null;
+  } catch (error) {
+    console.error("Product Visual Generation Error:", error);
+    return null;
+  }
+};
+
 export const getSmartProductSearch = async (query: string) => {
   try {
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
