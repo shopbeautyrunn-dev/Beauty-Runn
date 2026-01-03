@@ -1,5 +1,5 @@
 
-export type AppRole = 'CUSTOMER' | 'DRIVER' | 'VENDOR' | 'ADMIN' | 'EDITOR';
+export type AppRole = 'CUSTOMER' | 'DRIVER' | 'VENDOR' | 'ADMIN' | 'OWNER';
 export type DriverTier = 'Bronze' | 'Silver' | 'Gold' | 'Platinum';
 
 export type DriverOnboardingStatus = 'NOT_STARTED' | 'INTRO' | 'PERSONAL_INFO' | 'DOCUMENTS' | 'VEHICLE_INFO' | 'BACKGROUND_CHECK' | 'AGREEMENT' | 'SUBMITTED' | 'APPROVED' | 'REJECTED';
@@ -24,6 +24,7 @@ export interface BeautyVendor {
   distance?: number;
   velocity?: number; // Minutes for sorting
   isAIVerified?: boolean;
+  isActive?: boolean;
   pricingTier?: 'STANDARD' | 'PREMIUM' | 'ECONOMY';
   verificationNotes?: string;
 }
@@ -48,7 +49,7 @@ export interface Product {
   category: string;
   notes?: string;
   salesVolume?: number;
-  stockLevel?: number; // 0-100 for simulated logic
+  stockLevel?: number; 
   isTrending?: boolean;
   isBestSeller?: boolean;
   isOnSale?: boolean;
@@ -159,21 +160,4 @@ export interface AdminStats {
   activeOrders: number;
   avgRating: number;
   revenueGrowth: number;
-}
-
-export interface SupportTicket {
-  id: string;
-  customerId: string;
-  subject: string;
-  message: string;
-  status: 'OPEN' | 'IN_PROGRESS' | 'RESOLVED';
-  timestamp: number;
-}
-
-export interface TeamMember {
-  id: string;
-  name: string;
-  role: string;
-  email: string;
-  status: 'ACTIVE' | 'AWAY' | 'OFFLINE';
 }

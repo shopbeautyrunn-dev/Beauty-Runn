@@ -282,10 +282,10 @@ const App: React.FC = () => {
               Become a Runner
             </button>
             <button 
-              onClick={() => { setRole('ADMIN'); setIsAuthenticated(true); setView('ADMIN'); }} 
+              onClick={() => { setRole('OWNER'); setIsAuthenticated(true); setView('ADMIN'); }} 
               className="w-full bg-transparent text-[#1A1A1A]/40 py-2 font-black text-[9px] uppercase tracking-widest hover:text-[#1A1A1A] transition-all"
             >
-              Admin Dashboard
+              Owner Login (Command Center)
             </button>
           </div>
         </div>
@@ -303,7 +303,7 @@ const App: React.FC = () => {
                   {selectedZip || 'Search By Zip code'}
                 </button>
               )}
-              <button onClick={() => setIsAuthenticated(false)} className="w-10 h-10 bg-white/50 rounded-2xl flex items-center justify-center text-gray-400 hover:text-[#C48B8B] transition-all shadow-sm">
+              <button onClick={() => { setIsAuthenticated(false); setRole('CUSTOMER'); setView('HOME'); }} className="w-10 h-10 bg-white/50 rounded-2xl flex items-center justify-center text-gray-400 hover:text-[#C48B8B] transition-all shadow-sm">
                 <i className="fa-solid fa-power-off"></i>
               </button>
             </div>
@@ -362,7 +362,6 @@ const App: React.FC = () => {
                     </>
                   ) : (
                     <>
-                      <div className="w-20 h-20 bg-[#C48B8B] rounded-3xl flex items-center justify-center text-white text-3xl mx-auto shadow-lg animate-ping absolute top-0 left-0 right-0 -z-1 opacity-20"></div>
                       <div className="w-20 h-20 bg-[#C48B8B] rounded-3xl flex items-center justify-center text-white text-3xl mx-auto shadow-lg relative z-10">
                         <i className="fa-solid fa-radar animate-spin-slow"></i>
                       </div>
@@ -371,31 +370,15 @@ const App: React.FC = () => {
                     </>
                   )}
                 </div>
-
-                <div className="space-y-6">
-                   <h3 className="font-serif text-3xl italic text-[#1A1A1A]">Quick Links</h3>
-                   <div className="grid md:grid-cols-2 gap-4">
-                     {[
-                       { label: 'Weekly Earnings Report', icon: 'fa-chart-line' },
-                       { label: 'Runner Support Center', icon: 'fa-headset' },
-                       { label: 'Neighborhood Hotspots', icon: 'fa-fire' },
-                       { label: 'Vehicle & Doc Updates', icon: 'fa-folder-open' }
-                     ].map((link, idx) => (
-                       <button key={idx} className="bg-white p-6 rounded-3xl flex items-center gap-6 border border-[#1A1A1A]/5 shadow-sm hover:border-[#C48B8B] transition-all">
-                         <div className="w-10 h-10 bg-[#EDE4DB] rounded-xl flex items-center justify-center text-[#C48B8B]"><i className={`fa-solid ${link.icon}`}></i></div>
-                         <span className="text-[10px] font-black uppercase tracking-widest text-[#1A1A1A]">{link.label}</span>
-                       </button>
-                     ))}
-                   </div>
-                </div>
               </div>
             )}
 
             {view === 'ADMIN' && (
               <AdminCommandCenter 
-                onClose={() => setView('HOME')} 
+                onClose={() => { setView('HOME'); setRole('CUSTOMER'); setIsAuthenticated(false); }} 
                 orders={[]} 
                 applications={allDriverApps}
+                appRole={role === 'OWNER' ? 'OWNER' : 'ADMIN'}
                 onApproveApplication={(email) => {
                   const updated = allDriverApps.map(a => a.email === email ? { ...a, status: 'APPROVED' as any } : a);
                   setAllDriverApps(updated);
@@ -465,10 +448,6 @@ const App: React.FC = () => {
                       <i className="fa-solid fa-map-pin"></i> {searchResults.length} Neighborhood Hubs in {selectedZip || 'Houston'}
                     </p>
                   </div>
-                  <div className="flex bg-white/50 p-1 rounded-2xl border border-gray-100">
-                    <button onClick={() => setSearchViewType('LIST')} className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${searchViewType === 'LIST' ? 'bg-[#1A1A1A] text-white shadow-lg' : 'text-gray-400'}`}>List</button>
-                    <button onClick={() => setSearchViewType('MAP')} className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${searchViewType === 'MAP' ? 'bg-[#1A1A1A] text-white shadow-lg' : 'text-gray-400'}`}>Map</button>
-                  </div>
                 </div>
 
                 <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
@@ -489,22 +468,18 @@ const App: React.FC = () => {
                   ))}
                 </div>
 
-                {searchViewType === 'MAP' ? (
-                  <VendorMap vendors={searchResults} userZip={selectedZip || '77002'} onSelectVendor={(v) => { setSelectedVendor({ ...v, image: localStoreImages[v.id] || v.image }); setView('VENDOR'); }} />
-                ) : (
-                  <div className="grid md:grid-cols-2 gap-8">
-                    {searchResults.map(v => (
-                      <VendorCard 
-                        key={v.id} 
-                        vendor={v} 
-                        onSelect={() => { setSelectedVendor({ ...v, image: localStoreImages[v.id] || v.image }); setView('VENDOR'); }} 
-                        onGenerateImage={() => generateStoreImage(v)}
-                        isGenerating={isGeneratingImage === v.id}
-                        isLocal={v.zipCode === selectedZip}
-                      />
-                    ))}
-                  </div>
-                )}
+                <div className="grid md:grid-cols-2 gap-8">
+                  {searchResults.map(v => (
+                    <VendorCard 
+                      key={v.id} 
+                      vendor={v} 
+                      onSelect={() => { setSelectedVendor({ ...v, image: localStoreImages[v.id] || v.image }); setView('VENDOR'); }} 
+                      onGenerateImage={() => generateStoreImage(v)}
+                      isGenerating={isGeneratingImage === v.id}
+                      isLocal={v.zipCode === selectedZip}
+                    />
+                  ))}
+                </div>
               </div>
             ) : view === 'VENDOR' ? (
               <div className="animate-fadeIn space-y-10">
@@ -593,96 +568,9 @@ const App: React.FC = () => {
                   })}
                 </div>
               </div>
-            ) : view === 'CHECKOUT' ? (
-              <div className="animate-fadeIn max-w-xl mx-auto space-y-12">
-                <h2 className="font-serif text-5xl italic text-[#1A1A1A] text-center">Review My Runn</h2>
-                <div className="bg-white p-8 rounded-[48px] shadow-luxury border border-[#1A1A1A]/5">
-                  <div className="space-y-6 mb-10">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-[#C48B8B]">Sourcing from neighborhood anchor: {selectedVendor?.name}</p>
-                    {cart.map((item, idx) => (
-                      <div key={idx} className="flex justify-between items-center">
-                        <div className="flex items-center gap-4">
-                          <img src={item.image} className="w-12 h-16 object-cover rounded-xl border border-gray-100" alt="" />
-                          <div className="flex flex-col">
-                             <span className="text-xs font-black uppercase tracking-tight text-[#1A1A1A]">{item.name}</span>
-                             <span className="text-[9px] font-bold text-gray-400 uppercase">{item.brand} • {item.quantity}x</span>
-                          </div>
-                        </div>
-                        <span className="text-xs font-black text-[#1A1A1A]/40">${((item.isOnSale && item.salePrice ? item.salePrice : item.priceRange.max) * item.quantity).toFixed(2)}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <FeeBreakdown fees={calculatedFees} />
-                </div>
-                <button onClick={handlePlaceOrder} className="w-full bg-[#1A1A1A] text-white py-8 rounded-[32px] font-black text-xs uppercase tracking-[0.3em] shadow-2xl hover:bg-[#C48B8B] transition-all rose-glow">Confirm Order & Dispatch</button>
-              </div>
-            ) : view === 'TRACKING' ? (
-              <div className="animate-fadeIn space-y-10">
-                <header className="flex justify-between items-end">
-                  <div>
-                    <h2 className="font-serif text-5xl italic text-[#1A1A1A]">Live Tracking</h2>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-[#C48B8B] mt-2">Verified Sourcing in Progress</p>
-                  </div>
-                  <div className="px-5 py-2 bg-green-50 text-green-600 rounded-full text-[9px] font-black uppercase tracking-widest animate-pulse">Runner Dispatched</div>
-                </header>
-                <div className="h-80 rounded-[48px] overflow-hidden shadow-2xl border border-[#EDE4DB]"><TrackingMap status={currentOrder?.status || ''} /></div>
-              </div>
             ) : null}
           </main>
-
-          {cart.length > 0 && view !== 'CHECKOUT' && view !== 'TRACKING' && (
-            <div className="fixed bottom-10 left-1/2 -translate-x-1/2 w-[90%] max-w-lg bg-[#1A1A1A] rounded-[40px] px-10 py-6 flex justify-between items-center z-[200] shadow-2xl border border-white/5 backdrop-blur-md">
-               <div className="flex flex-col"><span className="text-[10px] font-black text-white/40 uppercase">Est. Total</span><span className="text-lg font-black text-white">${calculatedFees.authHoldTotal.toFixed(2)}</span></div>
-               <button onClick={() => setView('CHECKOUT')} className="bg-[#C48B8B] text-white px-8 py-4 rounded-2xl font-black text-[10px] uppercase">Review Runn List</button>
-            </div>
-          )}
-
-          {isZipModalOpen && <ZipSearchModal onSearch={handleZipSearch} onClose={() => setIsZipModalOpen(false)} />}
         </>
-      )}
-
-      {configProduct && (
-        <div className="fixed inset-0 z-[1000] bg-[#1A1A1A]/80 backdrop-blur-xl flex items-end justify-center p-4">
-          <div className="w-full max-w-xl bg-[#EDE4DB] rounded-[50px] p-10 space-y-10 animate-slideUp border-t border-[#C48B8B]/20">
-             <div className="flex justify-between items-center">
-                <div className="flex items-center gap-6">
-                  <div className="w-24 h-32 rounded-2xl overflow-hidden shadow-xl border border-white/10 relative">
-                    <img 
-                      src={configProduct.image} 
-                      className="w-full h-full object-cover" 
-                      alt={configProduct.name}
-                    />
-                    <div className="absolute inset-0 bg-black/5"></div>
-                  </div>
-                  <div>
-                    <h2 className="font-serif text-4xl italic leading-tight">{configProduct.name}</h2>
-                    <p className="text-[10px] font-black uppercase text-[#C48B8B] flex items-center gap-2 mt-2">
-                       <i className="fa-solid fa-circle-check text-[8px]"></i> Retail Packaging Verified
-                    </p>
-                  </div>
-                </div>
-                <button onClick={() => setConfigProduct(null)} className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm hover:text-[#C48B8B] transition-all"><i className="fa-solid fa-xmark"></i></button>
-             </div>
-             
-             <div className="space-y-4">
-               <div className="p-6 bg-white/50 rounded-3xl border border-black/5">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1">Local Retail Estimate</p>
-                      <p className="text-2xl font-black text-[#1A1A1A]">
-                        ${configProduct.isOnSale && configProduct.salePrice ? configProduct.salePrice.toFixed(2) : configProduct.priceRange.min.toFixed(2)}
-                      </p>
-                    </div>
-                  </div>
-                  <p className="text-[11px] font-medium leading-relaxed text-[#1A1A1A]/70 italic">
-                    We match the actual retail sleeve and branding of {configProduct.brand}. Your runner will verify this exact packaging at the neighborhood store.
-                  </p>
-               </div>
-             </div>
-
-             <button onClick={() => { setCart([...cart, { ...configProduct, quantity: 1 }]); setConfigProduct(null); }} className="w-full bg-[#1A1A1A] text-white py-7 rounded-3xl font-black text-xs uppercase tracking-widest shadow-2xl rose-glow transition-all active:scale-95">Add to My Runn List</button>
-          </div>
-        </div>
       )}
     </div>
   );
@@ -697,13 +585,6 @@ const VendorCard: React.FC<{
 }> = ({ vendor, onSelect, onGenerateImage, isGenerating, isLocal }) => (
   <div onClick={onSelect} className={`bg-white p-6 rounded-[40px] border transition-all cursor-pointer group animate-slideUp ${isLocal ? 'border-[#C48B8B] shadow-xl scale-[1.02]' : 'border-[#1A1A1A]/5 shadow-luxury hover:border-[#C48B8B]'}`}>
     <div className="relative h-56 w-full rounded-[32px] overflow-hidden mb-6 border border-[#1A1A1A]/5 bg-gray-50 flex items-center justify-center">
-      {isGenerating ? (
-        <div className="absolute inset-0 z-30 bg-[#EDE4DB]/40 backdrop-blur-sm flex flex-col items-center justify-center gap-3">
-          <div className="w-8 h-8 border-4 border-[#C48B8B] border-t-transparent rounded-full animate-spin"></div>
-          <span className="text-[8px] font-black uppercase tracking-[0.2em] text-[#C48B8B]">AI Sourcing View...</span>
-        </div>
-      ) : null}
-      
       <img 
         src={vendor.image} 
         className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ${isGenerating ? 'opacity-50 blur-sm' : 'opacity-100'}`} 

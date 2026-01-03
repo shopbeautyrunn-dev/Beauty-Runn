@@ -33,8 +33,10 @@ export const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2
   return R * c;
 };
 
+// Validates stores using Gemini 2.5 with Google Maps grounding
 export const validateStoresWithGemini = async (zip: string) => {
   try {
+    const coords = HOUSTON_ZIP_COORDS[zip] || HOUSTON_ZIP_COORDS['77002'];
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
@@ -43,7 +45,10 @@ export const validateStoresWithGemini = async (zip: string) => {
         tools: [{ googleMaps: {} }],
         toolConfig: {
           retrievalConfig: {
-            latLng: HOUSTON_ZIP_COORDS[zip] || HOUSTON_ZIP_COORDS['77002']
+            latLng: {
+              latitude: coords.lat,
+              longitude: coords.lng
+            }
           }
         }
       },
