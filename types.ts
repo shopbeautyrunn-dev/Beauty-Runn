@@ -2,7 +2,7 @@
 export type AppRole = 'CUSTOMER' | 'DRIVER' | 'VENDOR' | 'ADMIN' | 'EDITOR';
 export type DriverTier = 'Bronze' | 'Silver' | 'Gold' | 'Platinum';
 
-export type DriverOnboardingStatus = 'NOT_STARTED' | 'BACKGROUND_CHECK' | 'DOCUMENTS' | 'VEHICLE_INFO' | 'TERMS' | 'PENDING_APPROVAL' | 'APPROVED' | 'REJECTED';
+export type DriverOnboardingStatus = 'NOT_STARTED' | 'INTRO' | 'PERSONAL_INFO' | 'DOCUMENTS' | 'VEHICLE_INFO' | 'BACKGROUND_CHECK' | 'AGREEMENT' | 'SUBMITTED' | 'APPROVED' | 'REJECTED';
 
 export interface BeautyVendor {
   id: string;
@@ -48,6 +48,11 @@ export interface Product {
   category: string;
   notes?: string;
   salesVolume?: number;
+  stockLevel?: number; // 0-100 for simulated logic
+  isTrending?: boolean;
+  isBestSeller?: boolean;
+  isOnSale?: boolean;
+  salePrice?: number;
   options?: {
     colors?: string[];
     lengths?: string[];
@@ -123,15 +128,25 @@ export interface Message {
 export interface DriverApplication {
   fullName: string;
   dob: string;
-  ssn: string;
-  address: string;
   email: string;
+  phone: string;
+  address: string;
+  zipCode: string;
+  ssn: string;
   documents: {
-    license: string | null;
+    licenseFront: string | null;
+    licenseBack: string | null;
     ssnCard: string | null;
     insurance: string | null;
   };
+  vehicle: {
+    make: string;
+    model: string;
+    year: string;
+    plate: string;
+  };
   consentBackgroundCheck: boolean;
+  signature: string;
   status: DriverOnboardingStatus;
 }
 
