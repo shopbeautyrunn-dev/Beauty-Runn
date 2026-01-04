@@ -1,5 +1,5 @@
 
-import { BeautyVendor, Product, OrderFees } from '../types';
+import { BeautyVendor, Product, OrderFees, DeliverySpeed } from '../types';
 
 /**
  * Calculates a dynamic price for a product based on the specific store's tier and location factors.
@@ -28,14 +28,22 @@ export const calculateDynamicProductPrice = (product: Product, vendor: BeautyVen
 };
 
 /**
- * Calculates the full order fees including dynamic surcharges.
+ * Calculates the full order fees including dynamic surcharges and delivery speed adjustments.
  */
-export const calculateOrderFees = (cartItems: { priceRange: { max: number }, quantity: number }[], vendor: BeautyVendor): OrderFees => {
+export const calculateOrderFees = (
+  cartItems: { priceRange: { max: number }, quantity: number }[], 
+  vendor: BeautyVendor,
+  speed: DeliverySpeed = 'STANDARD'
+): OrderFees => {
   const shelfPriceEstimate = cartItems.reduce((acc, item) => acc + (item.priceRange.max * item.quantity), 0);
   
   const runnerBase = 4.99;
   const runnerDistanceFee = (vendor.distance || 0) * 0.75; // $0.75 per mile
-  const runnFee = runnerBase + runnerDistanceFee;
+  
+  // Speed adjustment
+  const speedSurcharge = speed === 'EXPEDITED' ? 5.00 : 0;
+  
+  const runnFee = runnerBase + runnerDistanceFee + speedSurcharge;
   
   const serviceFlat = 2.99;
   const serviceVariable = shelfPriceEstimate * 0.08; // 8% service fee

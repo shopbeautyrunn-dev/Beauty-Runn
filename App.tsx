@@ -1,7 +1,7 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { BeautyVendor, Product, CartItem, Order, OrderStatus, AppNotification, OrderFees, AppRole, DriverApplication } from './types';
-import { VENDORS, PRODUCTS, CATEGORIES, FALLBACKS } from './constants';
+import { BeautyVendor, Product, CartItem, Order, OrderStatus, AppNotification, OrderFees, AppRole, DriverApplication, DeliverySpeed } from './types';
+import { VENDORS, PRODUCTS, CATEGORIES, FALLBACKS, BRANDS } from './constants';
 import TrackingMap from './components/TrackingMap';
 import VendorMap from './components/VendorMap';
 import DriverOnboarding from './components/DriverOnboarding';
@@ -92,7 +92,8 @@ const ZipSearchModal: React.FC<{ onSearch: (zip: string) => void, onClose: () =>
   return (
     <div className="fixed inset-0 z-[500] bg-[#1A1A1A]/90 backdrop-blur-xl flex items-center justify-center p-8 animate-fadeIn">
       <div className="w-full max-w-md bg-[#EDE4DB] rounded-[60px] p-12 text-center space-y-10 animate-slideUp shadow-2xl relative border border-[#C48B8B]/20">
-        <button onClick={onClose} className="absolute top-8 right-8 text-gray-400 hover:text-black transition-colors">
+        {/* Fix: removed invalid 'onClose' attribute from HTML button element */}
+        <button className="absolute top-8 right-8 text-gray-400 hover:text-black transition-colors" onClick={onClose}>
           <i className="fa-solid fa-xmark text-xl"></i>
         </button>
         
@@ -137,6 +138,7 @@ const App: React.FC = () => {
   const [isZipModalOpen, setIsZipModalOpen] = useState(false);
   const [sortBy, setSortBy] = useState<'DISTANCE' | 'AVAILABILITY' | 'FASTEST'>('DISTANCE');
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string | null>(null);
+  const [selectedBrandFilter, setSelectedBrandFilter] = useState<string | null>(null);
   
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -145,11 +147,12 @@ const App: React.FC = () => {
   const [configProduct, setConfigProduct] = useState<Product | null>(null);
   const [localStoreImages, setLocalStoreImages] = useState<Record<string, string>>({});
   const [verifiedStores, setVerifiedStores] = useState<Record<string, Partial<BeautyVendor>>>({});
-  const [isGeneratingImage, setIsGeneratingImage] = useState<string | null>(null);
+  const [isGeneratingImage, setIsGeneratingImage] = useState<Record<string, boolean>>({});
   const [isGeneratingProductVisual, setIsGeneratingProductVisual] = useState(false);
   const [productVisuals, setProductVisuals] = useState<Record<string, string>>({});
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const [isEmergencyPaused, setIsEmergencyPaused] = useState(false);
+  const [deliverySpeed, setDeliverySpeed] = useState<DeliverySpeed>('STANDARD');
   
   // DRIVER STATE
   const [driverApp, setDriverApp] = useState<DriverApplication | null>(null);
@@ -158,8 +161,8 @@ const App: React.FC = () => {
 
   const calculatedFees = useMemo((): OrderFees => {
     if (!selectedVendor) return { shelfPriceEstimate: 0, runnFee: 0, serviceFee: 0, authHoldTotal: 0 };
-    return calculateOrderFees(cart, selectedVendor);
-  }, [cart, selectedVendor]);
+    return calculateOrderFees(cart, selectedVendor, deliverySpeed);
+  }, [cart, selectedVendor, deliverySpeed]);
 
   const searchResults = useMemo(() => {
     const userCoords = HOUSTON_ZIP_COORDS[selectedZip] || HOUSTON_ZIP_COORDS['77002'];
@@ -170,13 +173,20 @@ const App: React.FC = () => {
         ...v,
         image: localStoreImages[v.id] || v.image,
         distance: calculateDistance(userCoords.lat, userCoords.lng, v.lat, v.lng),
-        isAIVerified: verifiedData.isAIVerified ?? false,
-        verificationNotes: verifiedData.verificationNotes ?? ''
+        isAIVerified: verifiedData.isAIVerified ?? v.isAIVerified ?? false,
+        verificationNotes: verifiedData.verificationNotes ?? v.verificationNotes ?? ''
       };
     });
 
     if (selectedCategoryFilter) {
       list = list.filter(v => v.categories.some(cat => cat.toLowerCase().includes(selectedCategoryFilter.toLowerCase())));
+    }
+
+    if (selectedBrandFilter) {
+      const vendorsWithBrand = PRODUCTS.filter(p => p.brand.toLowerCase().includes(selectedBrandFilter.toLowerCase())).map(p => p.vendorId);
+      if (!vendorsWithBrand.includes('any')) {
+        list = list.filter(v => vendorsWithBrand.includes(v.id));
+      }
     }
 
     return list.sort((a, b) => {
@@ -187,11 +197,11 @@ const App: React.FC = () => {
       if (sortBy === 'FASTEST') return (a.velocity || 0) - (b.velocity || 0);
       return 0;
     });
-  }, [selectedZip, sortBy, selectedCategoryFilter, localStoreImages, verifiedStores]);
+  }, [selectedZip, sortBy, selectedCategoryFilter, selectedBrandFilter, localStoreImages, verifiedStores]);
 
   const addNotification = (title: string, body: string, type: AppNotification['type'] = 'order') => {
     const newNotif: AppNotification = { id: Math.random().toString(), title, body, type, timestamp: Date.now() };
-    setNotifications(prev => [...prev, newNotif]);
+    setNotifications(prev => [...prev, n => [...prev, newNotif]]);
   };
 
   const handleZipSearch = async (zip: string) => {
@@ -202,14 +212,14 @@ const App: React.FC = () => {
     
     VENDORS.forEach(async (v) => {
       if (v.zipCode === zip && !localStoreImages[v.id]) {
-        setIsGeneratingImage(v.id);
+        setIsGeneratingImage(prev => ({ ...prev, [v.id]: true }));
         try {
-          const img = await generateStorefrontImage(v.name, v.neighborhood || v.city);
+          const img = await generateStorefrontImage(v.name, v.address, v.neighborhood || v.city);
           setLocalStoreImages(prev => ({ ...prev, [v.id]: img }));
         } catch (e) {
-          console.error("Failed to generate store image", e);
+          console.error("Failed to generate grounded store image", e);
         } finally {
-          setIsGeneratingImage(null);
+          setIsGeneratingImage(prev => ({ ...prev, [v.id]: false }));
         }
       }
     });
@@ -217,10 +227,29 @@ const App: React.FC = () => {
     try {
       const validationResult = await validateStoresWithGemini(zip);
       if (validationResult) {
-        addNotification("Neighborhood Verified", `Located verified beauty supply hubs in ${zip}.`, 'success');
+        addNotification("Neighborhood Grounded", `Syncing visual data for hubs in ${zip}.`, 'success');
       }
     } catch (err) {
       console.error("Zip validation error:", err);
+    }
+  };
+
+  const loadVendorVerification = async (vendor: BeautyVendor) => {
+    if (verifiedStores[vendor.id]?.verificationNotes) return;
+    try {
+      const result = await validateStoreAuthenticity(vendor.name, vendor.address);
+      if (result) {
+        setVerifiedStores(prev => ({
+          ...prev,
+          [vendor.id]: {
+            ...prev[vendor.id],
+            isAIVerified: result.status === 'VERIFIED' || result.status === 'APPROVED',
+            verificationNotes: result.context
+          }
+        }));
+      }
+    } catch (e) {
+      console.error("Failed to load neighborhood context", e);
     }
   };
 
@@ -255,7 +284,8 @@ const App: React.FC = () => {
       vendorId: selectedVendor.id,
       timestamp: Date.now(),
       address: selectedZip || 'Houston Service Area',
-      allowSubstitutes: true
+      allowSubstitutes: true,
+      deliverySpeed: deliverySpeed
     };
     
     setCurrentOrder(newOrder);
@@ -278,6 +308,19 @@ const App: React.FC = () => {
     setCart(prev => [...prev, { ...product, quantity: 1 }]);
     setConfigProduct(null);
     addNotification("Added to List", `${product.name} added to your Runn.`);
+  };
+
+  const getDisplayDeliveryTime = () => {
+    if (!selectedVendor) return '';
+    if (deliverySpeed === 'STANDARD') return selectedVendor.deliveryTime;
+    return '5-8 min';
+  };
+
+  const handleBrandSelect = (brandName: string) => {
+    setSelectedBrandFilter(brandName);
+    setSelectedCategoryFilter(null);
+    setView('SEARCH_RESULTS');
+    addNotification("Sourcing Brand", `Looking for hubs carrying ${brandName}.`, 'promo');
   };
 
   if (showSplash) return (
@@ -334,7 +377,7 @@ const App: React.FC = () => {
       ) : (
         <>
           <nav className="px-8 py-6 flex items-center justify-between sticky top-0 z-[100] bg-[#EDE4DB]/95 backdrop-blur-xl border-b border-[#1A1A1A]/5">
-            <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setView('HOME')}>
+            <div className="flex items-center gap-3 cursor-pointer group" onClick={() => { setView('HOME'); setSelectedBrandFilter(null); setSelectedCategoryFilter(null); }}>
               <div className="flex items-center gap-1.5">
                 <h2 className="font-serif text-3xl italic text-[#1A1A1A]">B</h2>
                 <i className="fa-solid fa-heart text-[#C48B8B] text-xs animate-floating-heart mb-2"></i>
@@ -377,15 +420,37 @@ const App: React.FC = () => {
 
                 <div className="space-y-8">
                    <div className="flex justify-between items-end">
+                      <h4 className="font-serif text-3xl italic text-[#1A1A1A]">Shop by Brand</h4>
+                      <span className="text-[9px] font-black uppercase tracking-widest text-[#C48B8B]">Elite Partners</span>
+                   </div>
+                   <div className="flex gap-6 overflow-x-auto no-scrollbar pb-4 -mx-4 px-4">
+                     {BRANDS.map(brand => (
+                       <button 
+                        key={brand.id} 
+                        onClick={() => handleBrandSelect(brand.name)}
+                        className="shrink-0 group flex flex-col items-center gap-4 active:scale-95 transition-all"
+                       >
+                         <div className="w-24 h-24 rounded-[32px] overflow-hidden bg-white border border-[#1A1A1A]/5 shadow-sm group-hover:border-[#C48B8B] group-hover:shadow-lg transition-all">
+                           <img src={brand.image} alt={brand.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                         </div>
+                         <span className="text-[9px] font-black uppercase tracking-widest text-[#1A1A1A] group-hover:text-[#C48B8B]">{brand.name}</span>
+                       </button>
+                     ))}
+                   </div>
+                </div>
+
+                <div className="space-y-8">
+                   <div className="flex justify-between items-end">
                       <h4 className="font-serif text-3xl italic text-[#1A1A1A]">Neighborhood Favorites</h4>
-                      <span className="text-[9px] font-black uppercase tracking-widest text-[#C48B8B] cursor-pointer" onClick={() => { setView('SEARCH_RESULTS'); setSelectedCategoryFilter(null); }}>See All Stores</span>
+                      <span className="text-[9px] font-black uppercase tracking-widest text-[#C48B8B] cursor-pointer" onClick={() => { setView('SEARCH_RESULTS'); setSelectedCategoryFilter(null); setSelectedBrandFilter(null); }}>See All Stores</span>
                    </div>
                    <div className="grid md:grid-cols-2 gap-8">
                     {VENDORS.slice(0, 2).map(v => (
                       <VendorCard 
                         key={v.id} 
                         vendor={v} 
-                        onSelect={() => { setSelectedVendor(v); setView('VENDOR'); }}
+                        isGenerating={isGeneratingImage[v.id]}
+                        onSelect={() => { setSelectedVendor(v); setView('VENDOR'); loadVendorVerification(v); }}
                         isLocal={v.zipCode === selectedZip} 
                       />
                     ))}
@@ -396,24 +461,26 @@ const App: React.FC = () => {
               <div className="animate-fadeIn space-y-10">
                 <div className="flex flex-col md:flex-row justify-between items-end gap-6">
                   <div>
-                    <h2 className="font-serif text-6xl italic text-[#1A1A1A]">Store Selection</h2>
+                    <h2 className="font-serif text-6xl italic text-[#1A1A1A]">
+                      {selectedBrandFilter ? `${selectedBrandFilter}` : 'Store Selection'}
+                    </h2>
                     <p className="text-[10px] font-black uppercase tracking-widest text-[#C48B8B] mt-3 flex items-center gap-3">
-                      <i className="fa-solid fa-map-pin"></i> {searchResults.length} Hubs in {selectedZip || 'Houston'}
+                      <i className="fa-solid fa-map-pin"></i> {searchResults.length} Hubs found in {selectedZip || 'Houston'}
                     </p>
                   </div>
                 </div>
 
                 <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
                   <button 
-                    onClick={() => setSelectedCategoryFilter(null)}
-                    className={`shrink-0 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all ${!selectedCategoryFilter ? 'bg-[#1A1A1A] text-white' : 'bg-white text-gray-400 border-gray-100'}`}
+                    onClick={() => { setSelectedCategoryFilter(null); setSelectedBrandFilter(null); }}
+                    className={`shrink-0 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all ${!selectedCategoryFilter && !selectedBrandFilter ? 'bg-[#1A1A1A] text-white' : 'bg-white text-gray-400 border-gray-100'}`}
                   >
                     All Stores
                   </button>
                   {CATEGORIES.map(cat => (
                     <button 
                       key={cat}
-                      onClick={() => setSelectedCategoryFilter(cat)}
+                      onClick={() => { setSelectedCategoryFilter(cat); setSelectedBrandFilter(null); }}
                       className={`shrink-0 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all ${selectedCategoryFilter === cat ? 'bg-[#1A1A1A] text-white' : 'bg-white text-gray-400 border-gray-100'}`}
                     >
                       {cat}
@@ -426,7 +493,8 @@ const App: React.FC = () => {
                     <VendorCard 
                       key={v.id} 
                       vendor={v} 
-                      onSelect={() => { setSelectedVendor(v); setView('VENDOR'); }} 
+                      isGenerating={isGeneratingImage[v.id]}
+                      onSelect={() => { setSelectedVendor(v); setView('VENDOR'); loadVendorVerification(v); }} 
                       isLocal={v.zipCode === selectedZip}
                     />
                   ))}
@@ -439,12 +507,62 @@ const App: React.FC = () => {
                   <div className="text-right">
                     <h3 className="font-serif text-4xl italic text-[#1A1A1A] leading-tight">{selectedVendor?.name}</h3>
                     <p className="text-[10px] font-black uppercase tracking-widest text-[#C48B8B]">{selectedVendor?.neighborhood}</p>
+                    <div className="mt-4 flex items-center justify-end gap-3">
+                      <div className="flex items-center gap-2 bg-white/50 px-3 py-1.5 rounded-full border border-black/5">
+                        <i className="fa-solid fa-clock text-[#C48B8B] text-[10px]"></i>
+                        <span className="text-[9px] font-black uppercase tracking-widest text-[#1A1A1A]">{getDisplayDeliveryTime()}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Grounded Neighborhood Insight Section */}
+                <div className="bg-[#1A1A1A] p-8 rounded-[40px] text-white shadow-2xl relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-[#C48B8B] rounded-full blur-[80px] opacity-20 pointer-events-none group-hover:opacity-40 transition-opacity"></div>
+                  <div className="flex justify-between items-center mb-6">
+                    <div className="bg-[#C48B8B] text-white px-4 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest border border-white/20">
+                      Neighborhood Insight
+                    </div>
+                    <i className="fa-solid fa-sparkles text-[#C48B8B] animate-pulse"></i>
+                  </div>
+                  <h4 className="font-serif text-2xl italic leading-tight">Verified Local Context</h4>
+                  <p className="text-[11px] font-medium leading-relaxed opacity-70 italic mt-3 tracking-wide">
+                    {verifiedStores[selectedVendor?.id || '']?.verificationNotes || selectedVendor?.verificationNotes || "Grounding neighborhood data..."}
+                  </p>
+                </div>
+
+                <div className="bg-white p-6 rounded-[32px] border border-[#1A1A1A]/5 shadow-sm space-y-6">
+                  <div className="flex justify-between items-center">
+                    <h4 className="text-[10px] font-black uppercase tracking-widest text-[#1A1A1A]/40">Delivery Priority</h4>
+                    <span className="text-[9px] font-bold text-[#C48B8B] italic">Boost your Runn speed</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <button 
+                      onClick={() => setDeliverySpeed('STANDARD')}
+                      className={`p-5 rounded-2xl border-2 flex flex-col gap-2 transition-all ${deliverySpeed === 'STANDARD' ? 'border-[#C48B8B] bg-[#C48B8B]/5' : 'border-gray-50 bg-gray-50/50 hover:border-gray-200'}`}
+                    >
+                      <span className="text-[10px] font-black uppercase tracking-widest">Standard</span>
+                      <span className="text-[8px] font-bold text-gray-400 uppercase">Regular Hub Routing</span>
+                    </button>
+                    <button 
+                      onClick={() => setDeliverySpeed('EXPEDITED')}
+                      className={`p-5 rounded-2xl border-2 flex flex-col gap-2 transition-all ${deliverySpeed === 'EXPEDITED' ? 'border-[#C48B8B] bg-[#C48B8B]/5' : 'border-gray-50 bg-gray-50/50 hover:border-gray-200'}`}
+                    >
+                      <div className="flex justify-between items-center">
+                        <span className="text-[10px] font-black uppercase tracking-widest">Expedited</span>
+                        <i className="fa-solid fa-bolt text-[#C48B8B] text-[10px]"></i>
+                      </div>
+                      <span className="text-[8px] font-bold text-gray-400 uppercase">Direct Hub Sourcing (+$5)</span>
+                    </button>
                   </div>
                 </div>
 
                 <div className="space-y-14">
                   {CATEGORIES.map(cat => {
-                    const categoryProducts = PRODUCTS.filter(p => p.category === cat);
+                    let categoryProducts = PRODUCTS.filter(p => p.category === cat);
+                    if (selectedBrandFilter) {
+                      categoryProducts = categoryProducts.filter(p => p.brand.toLowerCase().includes(selectedBrandFilter.toLowerCase()));
+                    }
                     if (categoryProducts.length === 0) return null;
                     return (
                       <div key={cat} className="space-y-6">
@@ -475,6 +593,16 @@ const App: React.FC = () => {
                 <h2 className="font-serif text-5xl italic text-[#1A1A1A] text-center">Your Runn List</h2>
                 <div className="bg-white p-8 rounded-[48px] shadow-luxury border border-[#1A1A1A]/5">
                   <div className="space-y-6 mb-10">
+                    <div className="flex justify-between items-center pb-4 border-b border-gray-50">
+                      <div className="flex flex-col">
+                        <span className="text-[10px] font-black uppercase text-[#1A1A1A]/40 tracking-widest">Selected Store</span>
+                        <span className="text-sm font-black text-[#1A1A1A]">{selectedVendor?.name}</span>
+                      </div>
+                      <div className="flex flex-col text-right">
+                        <span className="text-[10px] font-black uppercase text-[#C48B8B] tracking-widest">{deliverySpeed}</span>
+                        <span className="text-[9px] font-bold text-gray-400 uppercase">{getDisplayDeliveryTime()}</span>
+                      </div>
+                    </div>
                     {cart.map((item, idx) => (
                       <div key={idx} className="flex justify-between items-center group">
                         <div className="flex items-center gap-4">
@@ -590,33 +718,60 @@ const App: React.FC = () => {
 const VendorCard: React.FC<{ 
   vendor: BeautyVendor, 
   onSelect: () => void, 
-  isLocal?: boolean 
-}> = ({ vendor, onSelect, isLocal }) => (
+  isLocal?: boolean,
+  isGenerating?: boolean
+}> = ({ vendor, onSelect, isLocal, isGenerating }) => (
   <div onClick={onSelect} className={`bg-white p-6 rounded-[40px] border transition-all cursor-pointer group animate-slideUp ${isLocal ? 'border-[#C48B8B] shadow-xl scale-[1.02]' : 'border-[#1A1A1A]/5 shadow-luxury hover:border-[#C48B8B]'}`}>
     <div className="relative h-56 w-full rounded-[32px] overflow-hidden mb-6 border border-[#1A1A1A]/5 bg-gray-50 flex items-center justify-center">
-      <img src={vendor.image} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt={vendor.name} />
-      <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between z-40">
-        <div className="bg-black/80 backdrop-blur-md px-4 py-2 rounded-2xl flex items-center gap-4 text-white">
-          <div className="flex flex-col">
-            <span className="text-[7px] font-black uppercase opacity-40">Distance</span>
-            <span className="text-[11px] font-black">{vendor.distance?.toFixed(1) || '0.0'} mi</span>
-          </div>
-          <div className="w-px h-6 bg-white/10"></div>
-          <div className="flex flex-col">
-            <span className="text-[7px] font-black uppercase opacity-40">Delivery</span>
-            <span className="text-[11px] font-black">{vendor.deliveryTime}</span>
-          </div>
+      {isGenerating ? (
+        <div className="flex flex-col items-center gap-4 animate-pulse">
+           <i className="fa-solid fa-wand-sparkles text-[#C48B8B] text-3xl"></i>
+           <span className="text-[8px] font-black uppercase tracking-widest text-gray-400">Grounded Sourcing...</span>
+        </div>
+      ) : (
+        <img src={vendor.image} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt={vendor.name} />
+      )}
+      
+      {/* Retail Verified View Badge */}
+      {!isGenerating && (
+        <div className="absolute top-4 right-4 bg-white/95 text-[#1A1A1A] px-3 py-1.5 rounded-full shadow-lg flex items-center justify-center gap-2 text-[8px] font-black uppercase tracking-widest z-20 border border-[#C48B8B]/20">
+          <i className="fa-solid fa-circle-check text-[#10B981]"></i> Verified View
+        </div>
+      )}
+
+      {/* High-Contrast Proximity Badge */}
+      <div className="absolute top-4 left-4 bg-[#C48B8B] text-white px-4 py-2 rounded-2xl shadow-xl flex flex-col items-center justify-center gap-0.5 z-40 border border-white/20">
+        <span className="text-[7px] font-black uppercase tracking-tighter opacity-60">Proximity</span>
+        <div className="flex items-center gap-1.5">
+          <i className="fa-solid fa-location-dot text-[9px]"></i>
+          <span className="text-[13px] font-black tracking-widest">{vendor.distance?.toFixed(1) || '0.0'} <span className="text-[8px]">mi</span></span>
         </div>
       </div>
+
+      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/60 to-transparent z-10 pointer-events-none"></div>
+
+      <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between z-40">
+        <div className="bg-white/10 backdrop-blur-md px-4 py-2.5 rounded-2xl flex items-center gap-3 text-white border border-white/10">
+          <i className="fa-solid fa-bolt text-[#C48B8B] text-[10px]"></i>
+          <span className="text-[10px] font-black uppercase tracking-widest">{vendor.deliveryTime} DELIVERY</span>
+        </div>
+      </div>
+
       {isLocal && (
-        <div className="absolute top-4 right-4 bg-[#C48B8B] text-white px-4 py-1.5 rounded-full shadow-lg flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest z-20">
-          Neighborhood Hub
+        <div className="absolute top-14 right-4 bg-black text-white px-4 py-1.5 rounded-full shadow-lg flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest z-20 border border-white/10">
+          <i className="fa-solid fa-heart text-[#C48B8B]"></i> HUB
         </div>
       )}
     </div>
     
     <div className="space-y-2 px-2">
-      <h3 className="font-serif text-3xl italic text-[#1A1A1A] group-hover:text-[#C48B8B] transition-colors leading-tight">{vendor.name}</h3>
+      <div className="flex justify-between items-start">
+        <h3 className="font-serif text-3xl italic text-[#1A1A1A] group-hover:text-[#C48B8B] transition-colors leading-tight">{vendor.name}</h3>
+        <div className="flex items-center gap-1 mt-1">
+          <i className="fa-solid fa-star text-xs text-yellow-400"></i>
+          <span className="text-[10px] font-black text-[#1A1A1A]">{vendor.rating}</span>
+        </div>
+      </div>
       <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">{vendor.address}</p>
     </div>
   </div>

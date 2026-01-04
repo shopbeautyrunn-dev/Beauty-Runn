@@ -1,6 +1,7 @@
 
 export type AppRole = 'CUSTOMER' | 'DRIVER' | 'VENDOR' | 'ADMIN' | 'OWNER';
 export type DriverTier = 'Bronze' | 'Silver' | 'Gold' | 'Platinum';
+export type DeliverySpeed = 'STANDARD' | 'EXPEDITED';
 
 export type DriverOnboardingStatus = 'NOT_STARTED' | 'INTRO' | 'PERSONAL_INFO' | 'DOCUMENTS' | 'VEHICLE_INFO' | 'BACKGROUND_CHECK' | 'AGREEMENT' | 'SUBMITTED' | 'APPROVED' | 'REJECTED';
 
@@ -101,6 +102,7 @@ export interface Order {
   timestamp: number;
   address: string;
   allowSubstitutes: boolean;
+  deliverySpeed?: DeliverySpeed;
   driverInfo?: {
     name: string;
     image: string;

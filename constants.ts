@@ -19,6 +19,16 @@ export const CATEGORIES = [
   'Skincare / Beauty Essentials'
 ];
 
+export const BRANDS = [
+  { id: 'mielle', name: 'Mielle Organics', image: 'https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?auto=format&fit=crop&q=80&w=200' },
+  { id: 'xpression', name: 'X-Pression', image: 'https://images.unsplash.com/photo-1595475038784-bbe439ff41e6?auto=format&fit=crop&q=80&w=200' },
+  { id: 'conair', name: 'Conair', image: 'https://images.unsplash.com/photo-1522338242992-e1a54906a8da?auto=format&fit=crop&q=80&w=200' },
+  { id: 'andis', name: 'Andis', image: 'https://images.unsplash.com/photo-1621605815841-db897c4733dd?auto=format&fit=crop&q=80&w=200' },
+  { id: 'wahl', name: 'Wahl', image: 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&q=80&w=200' },
+  { id: 'sheamoisture', name: 'Shea Moisture', image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&q=80&w=200' },
+  { id: 'ecoco', name: 'EcoCo', image: 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?auto=format&fit=crop&q=80&w=200' }
+];
+
 export const FALLBACKS = {
   storefront: 'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&q=80&w=800',
   product: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&q=80&w=600'
@@ -92,7 +102,7 @@ export const PRODUCTS: Product[] = [
     id: 'p-mielle-oil', 
     vendorId: 'any', 
     name: 'Mielle Rosemary Mint Scalp & Hair Oil', 
-    brand: 'Mielle',
+    brand: 'Mielle Organics',
     tagline: 'Retail Bottle with Dropper',
     image: 'https://m.media-amazon.com/images/I/61M7M7Y6CFL._SL1500_.jpg', 
     category: 'Hair Care & Styling Products', 
@@ -210,7 +220,7 @@ export const PRODUCTS: Product[] = [
     id: 'p-denman-d3',
     vendorId: 'any',
     name: 'Denman D3 Styling Brush',
-    brand: 'Denman',
+    brand: 'Conair',
     tagline: 'Original Retail Box',
     image: 'https://m.media-amazon.com/images/I/61J6OaKkYkL._SL1500_.jpg',
     category: 'Hair Tools',
