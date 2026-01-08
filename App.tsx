@@ -224,7 +224,7 @@ const App: React.FC = () => {
     setNotifications(prev => [{
       id: Date.now().toString(),
       title: "Runn Dispatched",
-      body: "A Runner is heading to the boutique.",
+      body: "A Runner is heading to the Beauty Supply Store.",
       type: 'success',
       timestamp: Date.now()
     }, ...prev]);
@@ -252,7 +252,10 @@ const App: React.FC = () => {
   if (showSplash) return (
     <div className="fixed inset-0 z-[1000] bg-[#EDE4DB] flex flex-col items-center justify-center animate-fadeIn" onClick={() => setShowSplash(false)}>
       <div className="text-center space-y-8 animate-splash-logo flex flex-col items-center">
-        <h1 className="font-serif text-9xl text-[#1A1A1A] italic border-b-2 border-[#C48B8B]">B</h1>
+        <div className="flex items-center gap-4">
+          <h1 className="font-serif text-9xl text-[#1A1A1A] italic border-b-2 border-[#C48B8B]">B</h1>
+          <i className="fa-solid fa-heart text-[#C48B8B] animate-floating-heart text-7xl"></i>
+        </div>
         <h2 className="text-[#1A1A1A] font-black text-2xl uppercase tracking-[0.3em]">Beauty Runn</h2>
         <p className="text-[#1A1A1A] text-[10px] font-bold uppercase tracking-widest opacity-60">Glow On. We'll Handle It.</p>
       </div>
@@ -292,7 +295,10 @@ const App: React.FC = () => {
       {/* Navigation */}
       <nav className="px-8 py-6 flex items-center justify-between sticky top-0 z-[100] bg-[#EDE4DB]/95 backdrop-blur-xl border-b border-[#1A1A1A]/5">
         <div className="flex items-center gap-3 cursor-pointer" onClick={resetToHome}>
-          <h2 className="font-serif text-3xl italic text-[#1A1A1A]">B</h2>
+          <div className="flex items-center">
+            <h2 className="font-serif text-3xl italic text-[#1A1A1A]">B</h2>
+            <i className="fa-solid fa-heart text-[#C48B8B] animate-floating-heart text-xs ml-1 mr-2"></i>
+          </div>
           <span className="font-black text-xs uppercase tracking-widest text-[#1A1A1A]">Runn</span>
         </div>
         <div className="flex items-center gap-4">
@@ -332,7 +338,7 @@ const App: React.FC = () => {
                        <h3 className="font-serif text-3xl italic">Order a Runn</h3>
                        <div className="w-12 h-12 bg-[#EDE4DB] rounded-2xl flex items-center justify-center text-[#C48B8B]"><i className="fa-solid fa-cart-shopping"></i></div>
                     </div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Enter your ZIP to find nearby independent boutiques</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Enter your ZIP to find nearby Beauty Supply Stores</p>
                     <button 
                       onClick={() => setIsZipModalOpen(true)}
                       className="w-full bg-[#1A1A1A] text-white py-7 rounded-3xl font-black text-xs uppercase tracking-widest shadow-xl rose-glow transition-all active:scale-95 flex items-center justify-center gap-4"
@@ -348,8 +354,8 @@ const App: React.FC = () => {
                   <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
                      <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center text-white text-2xl"><i className="fa-solid fa-car-side"></i></div>
                      <div className="text-center md:text-left flex-1">
-                        <h3 className="font-serif text-3xl italic text-white">Join the Runners</h3>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mt-1">Earn delivery fees shopping in your neighborhood</p>
+                        <h3 className="font-serif text-3xl italic text-white">Become a Runner</h3>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mt-1">Turn Every Local Runn into Fast Cash</p>
                      </div>
                      <i className="fa-solid fa-chevron-right text-white/20 group-hover:text-white transition-colors"></i>
                   </div>
@@ -404,7 +410,7 @@ const App: React.FC = () => {
                       <i className="fa-solid fa-store-slash"></i>
                    </div>
                    <div className="space-y-4">
-                      <p className="text-[10px] font-black uppercase text-gray-400">No boutiques found in this ZIP yet</p>
+                      <p className="text-[10px] font-black uppercase text-gray-400">No Beauty Supply Stores found in this ZIP yet</p>
                       <button onClick={() => setIsConciergeOpen(true)} className="bg-[#1A1A1A] text-white px-8 py-4 rounded-2xl text-[9px] font-black uppercase tracking-widest">Ask AI to find one</button>
                    </div>
                 </div>
