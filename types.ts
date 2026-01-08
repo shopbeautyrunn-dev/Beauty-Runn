@@ -5,21 +5,25 @@ export type DeliverySpeed = 'STANDARD' | 'EXPEDITED';
 
 export type DriverOnboardingStatus = 'NOT_STARTED' | 'INTRO' | 'PERSONAL_INFO' | 'DOCUMENTS' | 'VEHICLE_INFO' | 'BACKGROUND_CHECK' | 'AGREEMENT' | 'SUBMITTED' | 'APPROVED' | 'REJECTED';
 
-// Added Message interface to fix import error in ChatInterface
+export interface GroundingSource {
+  title: string;
+  uri: string;
+}
+
 export interface Message {
   id: string;
   senderId: string;
   receiverId: string;
   text: string;
   timestamp: number;
+  sources?: GroundingSource[];
 }
 
 export interface Area {
-  id: string;
+  id: string; // zone_id
   city: string;
   area_name: string;
-  area_type: 'NEIGHBORHOOD' | 'SUBURB';
-  county?: string;
+  area_type: 'zone' | 'region';
   zip_codes: string[];
 }
 
@@ -27,13 +31,14 @@ export interface ZipCode {
   zip: string;
   city: string;
   state: string;
+  neighborhood: string;
   lat: number;
   lng: number;
-  area_id: string;
+  area_id: string; // zone_id
 }
 
 export interface BeautyVendor {
-  id: string;
+  place_id: string; // primary key
   name: string;
   address: string;
   city: string;
@@ -43,27 +48,28 @@ export interface BeautyVendor {
   lng: number;
   phone?: string;
   website?: string;
-  hours?: string;
-  place_id?: string;
-  image: string;
-  primaryPhotoUrl?: string;
-  photoGalleryUrls?: string[];
-  googleMapsUrl?: string;
+  hours_json?: string;
   rating: number;
   user_ratings_total?: number;
+  zone_id: string;
+  neighborhood: string;
+  is_major_chain: boolean;
+  tags: string[]; // local_independent, wigs, braiding_hair, nail_supply, etc.
+  photo_resource_name?: string;
+  image: string; // photo_url (cached)
+  last_synced_at: number;
+  
+  // App-specific UI fields
+  id: string; // same as place_id
   deliveryTime: string;
   category: string;
   categories: string[];
   description: string;
-  neighborhood?: string;
-  area_id?: string;
-  tags: ('local_independent' | 'small_chain_local' | 'major_chain')[];
   distance?: number;
-  velocity?: number; 
   isAIVerified?: boolean;
-  isActive?: boolean;
   pricingTier?: 'STANDARD' | 'PREMIUM' | 'ECONOMY';
-  verificationNotes?: string;
+  unmapped_zip?: boolean;
+  velocity?: number;
 }
 
 export interface Product {
@@ -71,18 +77,14 @@ export interface Product {
   vendorId: string;
   name: string;
   brand: string;
-  tagline?: string;
   priceRange: { min: number; max: number };
   image: string;
   description: string;
   category: string;
-  stockLevel?: number; 
-  isTrending?: boolean;
-  isBestSeller?: boolean;
-  isOnSale?: boolean;
   options?: {
     colors?: string[];
   };
+  isBestSeller?: boolean;
 }
 
 export interface CartItem extends Product {
@@ -103,7 +105,6 @@ export interface OrderFees {
   shelfPriceEstimate: number;
   runnFee: number;
   serviceFee: number;
-  // Added optional surcharges used in pricingService
   urgencySurcharge?: number;
   speedSurcharge?: number;
   authHoldTotal: number;
@@ -130,7 +131,6 @@ export interface AppNotification {
   timestamp: number;
 }
 
-// Expanded DriverApplication with full onboarding details to fix Property 'documents' does not exist error
 export interface DriverApplication {
   fullName: string;
   email: string;
