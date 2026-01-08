@@ -43,7 +43,7 @@ export const calculateOrderFees = (
   // Speed adjustment
   const speedSurcharge = speed === 'EXPEDITED' ? 5.00 : 0;
   
-  const runnFee = runnerBase + runnerDistanceFee + speedSurcharge;
+  const runnFee = runnerBase + runnerDistanceFee;
   
   const serviceFlat = 2.99;
   const serviceVariable = shelfPriceEstimate * 0.08; // 8% service fee
@@ -53,13 +53,14 @@ export const calculateOrderFees = (
   let urgencySurcharge = 0;
   if (vendor.velocity && vendor.velocity < 10) urgencySurcharge = 2.50;
 
-  const authHoldTotal = shelfPriceEstimate + runnFee + serviceFee + urgencySurcharge;
+  const authHoldTotal = shelfPriceEstimate + runnFee + serviceFee + urgencySurcharge + speedSurcharge;
 
   return {
     shelfPriceEstimate,
     runnFee,
     serviceFee,
     urgencySurcharge,
+    speedSurcharge,
     authHoldTotal
   };
 };

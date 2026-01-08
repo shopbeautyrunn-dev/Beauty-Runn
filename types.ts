@@ -5,35 +5,65 @@ export type DeliverySpeed = 'STANDARD' | 'EXPEDITED';
 
 export type DriverOnboardingStatus = 'NOT_STARTED' | 'INTRO' | 'PERSONAL_INFO' | 'DOCUMENTS' | 'VEHICLE_INFO' | 'BACKGROUND_CHECK' | 'AGREEMENT' | 'SUBMITTED' | 'APPROVED' | 'REJECTED';
 
+// Added Message interface to fix import error in ChatInterface
+export interface Message {
+  id: string;
+  senderId: string;
+  receiverId: string;
+  text: string;
+  timestamp: number;
+}
+
+export interface Area {
+  id: string;
+  city: string;
+  area_name: string;
+  area_type: 'NEIGHBORHOOD' | 'SUBURB';
+  county?: string;
+  zip_codes: string[];
+}
+
+export interface ZipCode {
+  zip: string;
+  city: string;
+  state: string;
+  lat: number;
+  lng: number;
+  area_id: string;
+}
+
 export interface BeautyVendor {
   id: string;
   name: string;
   address: string;
+  city: string;
+  state: string;
+  zipCode: string;
   lat: number;
   lng: number;
+  phone?: string;
+  website?: string;
+  hours?: string;
+  place_id?: string;
   image: string;
+  primaryPhotoUrl?: string;
+  photoGalleryUrls?: string[];
+  googleMapsUrl?: string;
   rating: number;
+  user_ratings_total?: number;
   deliveryTime: string;
   category: string;
   categories: string[];
   description: string;
-  city: string;
-  zipCode: string;
   neighborhood?: string;
-  isSmallChain?: boolean;
-  topSellerIds?: string[];
+  area_id?: string;
+  tags: ('local_independent' | 'small_chain_local' | 'major_chain')[];
   distance?: number;
   velocity?: number; 
   isAIVerified?: boolean;
   isActive?: boolean;
   pricingTier?: 'STANDARD' | 'PREMIUM' | 'ECONOMY';
   verificationNotes?: string;
-}
-
-export interface MarketComparison {
-  retailAvg?: number;
-  localLow?: number;
-  localHigh?: number;
 }
 
 export interface Product {
@@ -43,22 +73,15 @@ export interface Product {
   brand: string;
   tagline?: string;
   priceRange: { min: number; max: number };
-  marketComparison?: MarketComparison;
   image: string;
-  fallbackImage?: string;
   description: string;
   category: string;
-  notes?: string;
-  salesVolume?: number;
   stockLevel?: number; 
   isTrending?: boolean;
   isBestSeller?: boolean;
   isOnSale?: boolean;
-  salePrice?: number;
   options?: {
     colors?: string[];
-    lengths?: string[];
-    types?: string[];
   };
 }
 
@@ -66,19 +89,12 @@ export interface CartItem extends Product {
   quantity: number;
   selectedOptions?: {
     color?: string;
-    length?: string;
-    type?: string;
   };
 }
 
 export enum OrderStatus {
   PENDING = 'PENDING',
   HOLD_PAID = 'HOLD_PAID',
-  RUNNER_AT_STORE = 'RUNNER_AT_STORE',
-  PURCHASING = 'PURCHASING',
-  PRICE_CONFIRMED = 'PRICE_CONFIRMED',
-  PICKING_UP = 'PICKING_UP',
-  IN_TRANSIT = 'IN_TRANSIT',
   DELIVERED = 'DELIVERED',
   CANCELLED = 'CANCELLED'
 }
@@ -87,7 +103,9 @@ export interface OrderFees {
   shelfPriceEstimate: number;
   runnFee: number;
   serviceFee: number;
+  // Added optional surcharges used in pricingService
   urgencySurcharge?: number;
+  speedSurcharge?: number;
   authHoldTotal: number;
 }
 
@@ -95,7 +113,6 @@ export interface Order {
   id: string;
   items: CartItem[];
   fees: OrderFees;
-  receiptAmount?: number;
   status: OrderStatus;
   customerId: string;
   vendorId: string;
@@ -103,13 +120,6 @@ export interface Order {
   address: string;
   allowSubstitutes: boolean;
   deliverySpeed?: DeliverySpeed;
-  driverInfo?: {
-    name: string;
-    image: string;
-    carModel: string;
-    rating: number;
-    phone: string;
-  };
 }
 
 export interface AppNotification {
@@ -120,22 +130,16 @@ export interface AppNotification {
   timestamp: number;
 }
 
-export interface Message {
-  id: string;
-  senderId: string;
-  receiverId: string;
-  text: string;
-  timestamp: number;
-}
-
+// Expanded DriverApplication with full onboarding details to fix Property 'documents' does not exist error
 export interface DriverApplication {
   fullName: string;
-  dob: string;
   email: string;
-  phone: string;
-  address: string;
-  zipCode: string;
-  ssn: string;
+  status: DriverOnboardingStatus;
+  dob?: string;
+  phone?: string;
+  address?: string;
+  zipCode?: string;
+  ssn?: string;
   documents: {
     licenseFront: string | null;
     licenseBack: string | null;
@@ -150,7 +154,6 @@ export interface DriverApplication {
   };
   consentBackgroundCheck: boolean;
   signature: string;
-  status: DriverOnboardingStatus;
 }
 
 export interface AdminStats {

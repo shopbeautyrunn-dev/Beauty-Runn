@@ -3,7 +3,6 @@ import { GoogleGenAI, Type } from "@google/genai";
 
 /**
  * Uses Gemini to validate a store's neighborhood presence and status
- * without illegal scraping, relying on model training data and tools.
  */
 export const validateStoreAuthenticity = async (storeName: string, address: string) => {
   try {
@@ -30,7 +29,8 @@ export const validateStoreAuthenticity = async (storeName: string, address: stri
             status: { type: Type.STRING },
             context: { type: Type.STRING }
           },
-          required: ["accuracy", "status", "context"]
+          // Fix: Use propertyOrdering instead of required in responseSchema
+          propertyOrdering: ["accuracy", "status", "context"]
         }
       }
     });
@@ -43,16 +43,61 @@ export const validateStoreAuthenticity = async (storeName: string, address: stri
 };
 
 /**
+ * Uses Gemini 2.5 Flash Image to clean and refine a raw product screenshot.
+ * Implements the user's exact "Visual Refinement" requirements.
+ */
+export const cleanProductImage = async (base64Data: string, mimeType: string) => {
+  try {
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    
+    // Exact prompt requested by user
+    const cleaningPrompt = `Edit this product image for my app: remove all extra wording, UI text, badges, prices, ratings, and background text. Keep only the text that is printed on the actual product packaging/label.
+    Requirements:
+    1. Crop to the product only (no phone status bar, Amazon page text, borders, or extra white space).
+    2. Keep the product label and branding sharp and readable.
+    3. Clean pure background (solid white).
+    4. Center the product, consistent scale across images.
+    5. Do not add any new text or graphics.`;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash-image',
+      contents: {
+        parts: [
+          { inlineData: { data: base64Data, mimeType: mimeType } },
+          { text: cleaningPrompt }
+        ]
+      },
+      config: {
+        imageConfig: {
+          aspectRatio: "1:1"
+        }
+      },
+    });
+
+    if (response.candidates?.[0]?.content?.parts) {
+      for (const part of response.candidates[0].content.parts) {
+        if (part.inlineData) {
+          return `data:image/png;base64,${part.inlineData.data}`;
+        }
+      }
+    }
+    return null;
+  } catch (error) {
+    console.error("Image Cleaning Error:", error);
+    return null;
+  }
+};
+
+/**
  * Generates a realistic product photography visual for a beauty item.
- * Uses gemini-2.5-flash-image for standard catalog quality.
  */
 export const generateRealisticProductVisual = async (productName: string, brand: string, description: string) => {
   try {
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const prompt = `High-quality realistic professional product photography of "${productName}" by ${brand}. 
     Description: ${description}. 
-    The product is in its original retail packaging, shown clearly on a clean, minimal, warm taupe studio background that matches a high-end beauty app. 
-    Natural soft studio lighting, sharp focus on packaging details, authentic labels, elegant presentation. 8k resolution.`;
+    The product is in its original retail packaging, shown clearly on a clean, minimal, warm taupe studio background. 
+    Natural soft studio lighting, sharp focus. 8k resolution.`;
 
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash-image',
@@ -80,25 +125,20 @@ export const generateRealisticProductVisual = async (productName: string, brand:
 
 /**
  * Generates a Grounded Storefront Visual.
- * Uses google_search tool to find actual visual info about the store 
- * and then generates a reconstructed high-fidelity image.
  */
 export const generateStorefrontImage = async (storeName: string, address: string, neighborhood: string) => {
   try {
+    // Fix: Mandatory check for API key selection when using gemini-3-pro-image-preview
     const hasKey = await (window as any).aistudio.hasSelectedApiKey();
     if (!hasKey) {
       await (window as any).aistudio.openSelectKey();
     }
     
+    // Fix: Always create a fresh instance right before use to capture latest API key
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-    
-    // First, we prompt the model to "look up" the actual appearance using Search Grounding
-    // and then generate based on that visual data.
-    const prompt = `Use Google Search to find the actual visual appearance, signage, and storefront architecture of the beauty supply store "${storeName}" located at "${address}" in Houston's ${neighborhood} neighborhood. 
+    const prompt = `Find actual visual appearance of "${storeName}" at "${address}" in Houston's ${neighborhood}. 
     Then, generate a high-end, professional architectural photograph of this specific storefront. 
-    The image should feature the store's actual sign and building style. 
-    Aesthetic: Luxurious, clean, cinematic lighting, golden hour. 8k resolution. 
-    If specific details are unavailable, generate a professional architectural placeholder with the sign clearly displaying "${storeName}" on an elegant warm-taupe storefront.`;
+    Architecture: Modern boutique, elegant sign. Golden hour lighting. 8k.`;
 
     const response = await ai.models.generateContent({
       model: 'gemini-3-pro-image-preview',
@@ -108,61 +148,25 @@ export const generateStorefrontImage = async (storeName: string, address: string
           aspectRatio: "16:9",
           imageSize: "1K"
         },
-        // Fix: Use 'google_search' tool key for image generation grounding tasks per guidelines
-        tools: [{ google_search: {} }] 
+        // Fix: Use 'googleSearch' instead of 'google_search' to match @google/genai ToolUnion type
+        tools: [{ googleSearch: {} }] 
       },
     });
 
     if (response.candidates?.[0]?.content?.parts) {
       for (const part of response.candidates[0].content.parts) {
         if (part.inlineData) {
-          const base64EncodeString: string = part.inlineData.data;
-          return `data:image/png;base64,${base64EncodeString}`;
+          return `data:image/png;base64,${part.inlineData.data}`;
         }
       }
     }
     throw new Error("No image data returned from Gemini");
-  } catch (error) {
+  } catch (error: any) {
     console.error("Storefront Generation Error:", error);
+    // Fix: If request fails due to missing entity, prompt user to select key again
+    if (error.message && error.message.includes("Requested entity was not found.")) {
+       await (window as any).aistudio.openSelectKey();
+    }
     throw error;
-  }
-};
-
-export const getSmartProductSearch = async (query: string) => {
-  try {
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-    const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: `User is searching for professional beauty products in Houston via the "Beauty Runn" app: "${query}". 
-      Suggest local neighborhood beauty supplies or salon-grade items found in Houston (e.g., 5th Ward, Sunnyside, Greenspoint). 
-      Keep recommendations strictly limited to beauty: hair, wigs, extensions, tools.`,
-      config: {
-        maxOutputTokens: 250,
-        thinkingConfig: { thinkingBudget: 100 },
-      }
-    });
-    return response.text;
-  } catch (error) {
-    console.error("Gemini Search Error:", error);
-    return "Curating Houston's finest beauty selections...";
-  }
-};
-
-export const getMarketPriceEstimation = async (productName: string, category: string) => {
-  try {
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-    const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: `What is the typical average retail price range for "${productName}" in the "${category}" category at local independent beauty supply stores in Houston, TX? Provide only the range in USD, e.g. "$4.99 - $6.99".`,
-      config: {
-        // Fix: Always set thinkingBudget when maxOutputTokens is configured to avoid empty responses
-        maxOutputTokens: 50,
-        thinkingConfig: { thinkingBudget: 25 }
-      }
-    });
-    return response.text;
-  } catch (error) {
-    console.error("Price Estimation Error:", error);
-    return "Market price varies by store location.";
   }
 };

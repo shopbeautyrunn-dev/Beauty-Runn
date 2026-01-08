@@ -1,5 +1,4 @@
-
-import { BeautyVendor, Product } from './types';
+import { BeautyVendor, Product, Area, ZipCode } from './types';
 
 export const COLORS = {
   primary: '#C48B8B',
@@ -9,223 +8,140 @@ export const COLORS = {
   error: '#EF4444'
 };
 
-export const CATEGORIES = [
-  'Hair Extensions & Wigs',
-  'Braiding Hair / Synthetic Hair',
-  'Hair Care & Styling Products',
-  'Hair Tools',
-  'Hair Accessories',
-  'Hair Color / Dye',
-  'Skincare / Beauty Essentials'
+export const AREAS: Area[] = [
+  { 
+    id: 'area-inner-loop', 
+    city: 'Houston', 
+    area_name: 'Inner Loop & Central', 
+    area_type: 'NEIGHBORHOOD', 
+    zip_codes: [
+      '77002', '77003', '77004', '77005', '77006', 
+      '77007', '77008', '77010', '77019', '77021', 
+      '77027', '77030', '77046', '77098'
+    ] 
+  },
+  { id: 'area-katy', city: 'Katy', area_name: 'West Houston & Katy', area_type: 'SUBURB', zip_codes: ['77494', '77449', '77450'] },
+  { id: 'area-sharpstown', city: 'Houston', area_name: 'Southwest Houston', area_type: 'NEIGHBORHOOD', zip_codes: ['77036', '77074'] }
 ];
 
-export const BRANDS = [
-  { id: 'mielle', name: 'Mielle Organics', image: 'https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?auto=format&fit=crop&q=80&w=200' },
-  { id: 'xpression', name: 'X-Pression', image: 'https://images.unsplash.com/photo-1595475038784-bbe439ff41e6?auto=format&fit=crop&q=80&w=200' },
-  { id: 'conair', name: 'Conair', image: 'https://images.unsplash.com/photo-1522338242992-e1a54906a8da?auto=format&fit=crop&q=80&w=200' },
-  { id: 'andis', name: 'Andis', image: 'https://images.unsplash.com/photo-1621605815841-db897c4733dd?auto=format&fit=crop&q=80&w=200' },
-  { id: 'wahl', name: 'Wahl', image: 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&q=80&w=200' },
-  { id: 'sheamoisture', name: 'Shea Moisture', image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&q=80&w=200' },
-  { id: 'ecoco', name: 'EcoCo', image: 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?auto=format&fit=crop&q=80&w=200' }
+export const ZIP_CODES: ZipCode[] = [
+  { zip: '77002', city: 'Houston', state: 'TX', area_id: 'area-inner-loop', lat: 29.7568, lng: -95.3656 },
+  { zip: '77003', city: 'Houston', state: 'TX', area_id: 'area-inner-loop', lat: 29.7497, lng: -95.3478 },
+  { zip: '77004', city: 'Houston', state: 'TX', area_id: 'area-inner-loop', lat: 29.7248, lng: -95.3637 },
+  { zip: '77005', city: 'Houston', state: 'TX', area_id: 'area-inner-loop', lat: 29.7184, lng: -95.4250 },
+  { zip: '77006', city: 'Houston', state: 'TX', area_id: 'area-inner-loop', lat: 29.7400, lng: -95.3900 },
+  { zip: '77007', city: 'Houston', state: 'TX', area_id: 'area-inner-loop', lat: 29.7715, lng: -95.4122 },
+  { zip: '77019', city: 'Houston', state: 'TX', area_id: 'area-inner-loop', lat: 29.7550, lng: -95.4000 },
+  { zip: '77021', city: 'Houston', state: 'TX', area_id: 'area-inner-loop', lat: 29.6942, lng: -95.3421 },
+  { zip: '77098', city: 'Houston', state: 'TX', area_id: 'area-inner-loop', lat: 29.7330, lng: -95.4150 },
+  { zip: '77449', city: 'Katy', state: 'TX', area_id: 'area-katy', lat: 29.8322, lng: -95.7563 },
+  { zip: '77036', city: 'Houston', state: 'TX', area_id: 'area-sharpstown', lat: 29.7042, lng: -95.5323 }
 ];
-
-export const FALLBACKS = {
-  storefront: 'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&q=80&w=800',
-  product: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&q=80&w=600'
-};
 
 export const VENDORS: BeautyVendor[] = [
   {
     id: 'hou-empire-griggs',
     name: 'Beauty Empire - Griggs',
-    address: '5086 Griggs Rd, Houston, TX 77021',
+    address: '5086 Griggs Rd',
+    city: 'Houston', state: 'TX', zipCode: '77021',
     lat: 29.6942, lng: -95.3421,
-    image: 'https://images.unsplash.com/photo-1555529731-118a0976d0a1?auto=format&fit=crop&q=80&w=800',
+    phone: '713-747-1234',
+    place_id: 'ChIJR6E-MhK_QIYRR5_pT78-eX4',
+    image: 'https://images.unsplash.com/photo-1512496011931-d21d88a3e55a?auto=format&fit=crop&q=80&w=800',
     rating: 4.8,
+    user_ratings_total: 852,
     deliveryTime: '12-15 min',
-    velocity: 12,
-    category: 'Local Beauty Supply',
-    categories: ['Hair Extensions & Wigs', 'Braiding Hair / Synthetic Hair', 'Hair Care & Styling Products'],
-    city: 'Houston', zipCode: '77021', neighborhood: 'Sunnyside',
-    description: 'A recognizable neighborhood anchor on Griggs Rd, identified by its bright retail facade.',
-    pricingTier: 'STANDARD',
-    isAIVerified: true
+    category: 'Independent',
+    categories: ['Braiding Hair', 'Styling Products'],
+    description: 'A beloved neighborhood staple in the Third Ward area.',
+    area_id: 'area-inner-loop',
+    tags: ['local_independent'],
+    isAIVerified: true,
+    pricingTier: 'STANDARD'
   },
   {
-    id: 'hou-almeda-beauty',
-    name: 'Almeda Beauty Supply',
-    address: '4410 Almeda Rd, Houston, TX 77004',
+    id: 'hou-empire-almeda',
+    name: 'Beauty Empire - Almeda',
+    address: '4410 Almeda Rd',
+    city: 'Houston', state: 'TX', zipCode: '77004',
     lat: 29.7288, lng: -95.3789,
+    phone: '713-529-1234',
+    place_id: 'ChIJVXUq-nS_QIYRv9-p-123xyz',
     image: 'https://images.unsplash.com/photo-1534452203293-494d7ddbf7e0?auto=format&fit=crop&q=80&w=800',
     rating: 4.9,
+    user_ratings_total: 412,
     deliveryTime: '10-18 min',
-    velocity: 15,
-    category: 'Neighborhood Store',
-    categories: ['Skincare / Beauty Essentials', 'Hair Care & Styling Products', 'Hair Tools'],
-    city: 'Houston', zipCode: '77004', neighborhood: '3rd Ward',
-    description: 'A 3rd Ward favorite located in the historic Almeda corridor shopping strip.',
-    pricingTier: 'PREMIUM',
-    isAIVerified: true
+    category: 'Independent',
+    categories: ['Luxe Hair', 'Premium Skincare'],
+    description: 'Boutique favorites serving Midtown and the Museum District.',
+    area_id: 'area-inner-loop',
+    tags: ['local_independent'],
+    isAIVerified: true,
+    pricingTier: 'PREMIUM'
+  },
+  {
+    id: 'hou-queen-beauty',
+    name: 'Queen Beauty Supply',
+    address: '3415 Dowling St',
+    city: 'Houston', state: 'TX', zipCode: '77004',
+    lat: 29.7350, lng: -95.3680,
+    phone: '713-222-1111',
+    place_id: 'ChIJQueenBeauty777',
+    image: 'https://images.unsplash.com/photo-1522338242992-e1a54906a8da?auto=format&fit=crop&q=80&w=800',
+    rating: 4.7,
+    user_ratings_total: 215,
+    deliveryTime: '15-20 min',
+    category: 'Independent',
+    categories: ['Synthetic Hair', 'Nail Lacquer'],
+    description: 'Local favorite known for unique hair accessories.',
+    area_id: 'area-inner-loop',
+    tags: ['local_independent'],
+    isAIVerified: true,
+    pricingTier: 'STANDARD'
+  },
+  {
+    id: 'hou-montrose-luxe',
+    name: 'Montrose Luxe Aesthetics',
+    address: '1200 Westheimer Rd',
+    city: 'Houston', state: 'TX', zipCode: '77006',
+    lat: 29.7430, lng: -95.3950,
+    phone: '713-555-8888',
+    place_id: 'ChIJMontroseLuxe888',
+    image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&q=80&w=800',
+    rating: 5.0,
+    user_ratings_total: 98,
+    deliveryTime: '8-12 min',
+    category: 'Independent',
+    categories: ['Professional Tools', 'Cosmeceuticals'],
+    description: 'High-end beauty essentials in the heart of Montrose.',
+    area_id: 'area-inner-loop',
+    tags: ['local_independent'],
+    isAIVerified: true,
+    pricingTier: 'PREMIUM'
   }
 ];
 
 export const PRODUCTS: Product[] = [
   { 
-    id: 'p-xpression-ultra', 
+    id: 'p-outre-xpression-3x-42', 
     vendorId: 'any', 
-    name: 'X-Pression Ultra Braid (3X Pack)', 
-    brand: 'X-Pression',
-    tagline: 'Retail-Ready Standard Packaging',
-    image: 'https://m.media-amazon.com/images/I/71u9S+OqX9L._SL1500_.jpg', 
+    name: 'Outre X-Pression Braid Pre Stretched Braid 42" 3X', 
+    brand: 'Outre',
+    priceRange: { min: 14.99, max: 18.99 },
+    image: 'https://m.media-amazon.com/images/I/71Y87tS87UL._SL1500_.jpg', 
     category: 'Braiding Hair / Synthetic Hair', 
-    description: '100% Kanekalon, Hot Water Set, 3X Super Braid Value Pack. Clear retail sleeve with orange/green branding.',
-    priceRange: { min: 4.99, max: 7.49 },
-    isBestSeller: true,
-    isTrending: true,
-    stockLevel: 85
+    description: 'Pre-stretched 42 inch braiding hair. 3X Multipack.',
+    options: { colors: ['1', '1B', '2', '4', '27', '30', 'T1B/350'] }
   },
-  { 
-    id: 'p-ezbraid-spetra', 
-    vendorId: 'any', 
-    name: 'EZ-Braid Spetra Fiber', 
-    brand: 'EZ-Braid',
-    tagline: 'Standard Retail Sleeve',
-    image: 'https://m.media-amazon.com/images/I/719h8iOEqIL._SL1500_.jpg', 
-    category: 'Braiding Hair / Synthetic Hair', 
-    description: 'Antimicrobial EZ-Braid hair in authentic factory packaging. Professional retail presentation.',
-    priceRange: { min: 5.49, max: 7.99 },
-    isOnSale: true,
-    salePrice: 4.99,
-    stockLevel: 12
-  },
-  { 
-    id: 'p-mielle-oil', 
-    vendorId: 'any', 
-    name: 'Mielle Rosemary Mint Scalp & Hair Oil', 
+  {
+    id: 'p-mielle-oil',
+    vendorId: 'any',
+    name: 'Mielle Rosemary Mint Scalp & Hair Strengthening Oil',
     brand: 'Mielle Organics',
-    tagline: 'Retail Bottle with Dropper',
-    image: 'https://m.media-amazon.com/images/I/61M7M7Y6CFL._SL1500_.jpg', 
-    category: 'Hair Care & Styling Products', 
-    description: 'Iconic 2oz green glass bottle. Authentic Mielle retail packaging.',
-    priceRange: { min: 9.99, max: 13.50 },
-    isTrending: true,
-    stockLevel: 45
-  },
-  { 
-    id: 'p-andis-toutliner', 
-    vendorId: 'any', 
-    name: 'Andis T-Outliner Trimmer', 
-    brand: 'Andis',
-    tagline: 'Professional Retail Display Box',
-    image: 'https://m.media-amazon.com/images/I/61Cg-v6I1zL._SL1500_.jpg', 
-    category: 'Hair Tools', 
-    description: 'Genuine Andis professional trimmer in original retail display box.',
-    priceRange: { min: 65.00, max: 94.99 },
-    isBestSeller: true,
-    stockLevel: 8
-  },
-  {
-    id: 'p-shea-curl-smoothie',
-    vendorId: 'any',
-    name: 'Shea Moisture Curl Enhancing Smoothie',
-    brand: 'Shea Moisture',
-    tagline: 'Authentic 12oz Tub',
-    image: 'https://m.media-amazon.com/images/I/71K1j6S-w+L._SL1500_.jpg',
+    priceRange: { min: 9.99, max: 12.99 },
+    image: 'https://m.media-amazon.com/images/I/61Nl-HhA7dL._SL1500_.jpg',
     category: 'Hair Care & Styling Products',
-    description: 'The original Coconut & Hibiscus formula in the classic orange retail jar.',
-    priceRange: { min: 11.99, max: 14.99 },
-    isBestSeller: true,
-    stockLevel: 120
-  },
-  {
-    id: 'p-edge-booster',
-    vendorId: 'any',
-    name: 'Edge Booster Strong Hold Gel',
-    brand: 'Style Factor',
-    tagline: 'Retail Scented Jar',
-    image: 'https://m.media-amazon.com/images/I/61qH3W3W9yL._SL1000_.jpg',
-    category: 'Hair Care & Styling Products',
-    description: 'Professional-grade edge control in the signature blue/black packaging.',
-    priceRange: { min: 7.99, max: 10.99 },
-    isTrending: true,
-    stockLevel: 5
-  },
-  {
-    id: 'p-freetress-waterwave',
-    vendorId: 'any',
-    name: 'Freetress Water Wave 22"',
-    brand: 'Freetress',
-    tagline: 'Bulk Crochet Packaging',
-    image: 'https://m.media-amazon.com/images/I/81xUfK4uLGL._SL1500_.jpg',
-    category: 'Braiding Hair / Synthetic Hair',
-    description: 'Synthetic crochet hair in the standard yellow/red Freetress sleeve.',
-    priceRange: { min: 6.99, max: 8.99 },
-    isOnSale: true,
-    salePrice: 5.99,
-    stockLevel: 30
-  },
-  {
-    id: 'p-wahl-senior',
-    vendorId: 'any',
-    name: 'Wahl Professional 5-Star Senior',
-    brand: 'Wahl',
-    tagline: 'Heavy-Duty Retail Box',
-    image: 'https://m.media-amazon.com/images/I/71f7M+9XqGL._SL1500_.jpg',
-    category: 'Hair Tools',
-    description: 'Cordless professional clipper in original Wahl retail packaging.',
-    priceRange: { min: 145.00, max: 180.00 },
-    isBestSeller: true,
-    stockLevel: 4
-  },
-  {
-    id: 'p-eco-olive',
-    vendorId: 'any',
-    name: 'Eco Styler Olive Oil Gel',
-    brand: 'EcoCo',
-    tagline: 'Classic 32oz Jar',
-    image: 'https://m.media-amazon.com/images/I/81bN8WvW-3L._SL1500_.jpg',
-    category: 'Hair Care & Styling Products',
-    description: 'The iconic green gel in the large retail tub with the black lid.',
-    priceRange: { min: 5.99, max: 8.99 },
-    isBestSeller: true,
-    stockLevel: 200
-  },
-  {
-    id: 'p-got2b-freeze',
-    vendorId: 'any',
-    name: 'Got2b Glued Freeze Spray',
-    brand: 'Schwarzkopf',
-    tagline: '12oz Yellow Aerosol Can',
-    image: 'https://m.media-amazon.com/images/I/51Hk88GfGTL._SL1000_.jpg',
-    category: 'Hair Care & Styling Products',
-    description: 'The viral yellow spray bottle used globally for wig installs and edge control.',
-    priceRange: { min: 6.49, max: 9.99 },
-    isTrending: true,
-    stockLevel: 64
-  },
-  {
-    id: 'p-shinenjam',
-    vendorId: 'any',
-    name: "Shine 'n Jam Conditioning Gel",
-    brand: 'Ampro',
-    tagline: 'Retail Orange Jar',
-    image: 'https://m.media-amazon.com/images/I/71Z-T7o6y5L._SL1500_.jpg',
-    category: 'Hair Care & Styling Products',
-    description: 'Extra hold braiding gel in the classic orange jar. Authentic retail presentation.',
-    priceRange: { min: 6.99, max: 10.50 },
-    isBestSeller: true,
-    stockLevel: 45
-  },
-  {
-    id: 'p-denman-d3',
-    vendorId: 'any',
-    name: 'Denman D3 Styling Brush',
-    brand: 'Conair',
-    tagline: 'Original Retail Box',
-    image: 'https://m.media-amazon.com/images/I/61J6OaKkYkL._SL1500_.jpg',
-    category: 'Hair Tools',
-    description: 'Genuine Denman 7-row styling brush in original white/red retail box.',
-    priceRange: { min: 19.99, max: 24.99 },
-    stockLevel: 15
+    description: 'Infused with Biotin and encourages growth for all hair types.',
+    isBestSeller: true
   }
 ];
